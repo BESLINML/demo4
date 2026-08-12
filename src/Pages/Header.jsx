@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+
 import Category from "./Category";
 import Allproducts from "../Products/Allproducts";
 
@@ -23,31 +24,296 @@ export default function Header() {
     const navigate = useNavigate();
 
 
+    // =========================================================
+    // MANUAL CATEGORIES + SUBCATEGORIES
+    // =========================================================
+
+    const manualSubCategories = {
+
+        "Main Categories": [
+            "Customized Gifts",
+            "Readymade Gifts",
+            "Premium Gifts",
+            "Budget Gifts"
+        ],
+
+        "Occasion-Based Categories": [
+            "Birthday Gifts",
+            "Wedding & Anniversary Gifts",
+            "Festival Gifts",
+            "Love & Romantic Gifts",
+            "Friendship Gifts"
+        ],
+
+        "Recipient-Based Categories": [
+            "Gifts for Him",
+            "Gifts for Her",
+            "Gifts for Kids",
+            "Gifts for Parents",
+            "Gifts for Friends"
+        ],
+
+        "Product-Based Categories": [
+            "Photo Frames",
+            "Wall Hangings",
+            "MDF Gifts",
+            "Metal Engraving",
+            "Pillow Printing",
+            "Cup Printing",
+            "Keychains",
+            "Return Gifts",
+            "3D Printing",
+            "Laser Cutting",
+            "Home Decor",
+            "Toys"
+        ],
+
+        "Special Categories": [
+            "Corporate Gifts",
+            "Bulk Orders",
+            "Handmade Gifts",
+            "Trending Gifts"
+        ],
+
+        "Premium Sections": [
+            "Best Sellers",
+            "New Arrivals",
+            "Limited Edition",
+            "Personalized Combos"
+        ]
+
+    };
+
+
+    // =========================================================
+    // GET PRODUCT CATEGORIES
+    // =========================================================
+
+    const productCategories = [
+        ...new Set(
+            Allproducts
+                .map(product => product.category)
+                .filter(Boolean)
+        )
+    ];
+
+
+    // =========================================================
+    // ALL MAIN CATEGORIES
+    // =========================================================
+
+    const allCategories = [
+        ...new Set([
+            ...productCategories,
+            ...Object.keys(manualSubCategories)
+        ])
+    ];
+
+
+    // =========================================================
+    // ALL SUBCATEGORIES
+    // =========================================================
+
+    const productSubcategories = [
+        ...new Set(
+            Allproducts
+                .map(product => product.subcategory)
+                .filter(Boolean)
+        )
+    ];
+
+
+    const manualSubcategories = [
+        ...Object.values(manualSubCategories).flat()
+    ];
+
+
+    const allSubcategories = [
+        ...new Set([
+            ...productSubcategories,
+            ...manualSubcategories
+        ])
+    ];
+
+
+    // =========================================================
     // SEARCH
-    const filteredProducts = Allproducts.filter((product) => {
+    // =========================================================
 
-        const searchText = search.toLowerCase();
+    const searchText = search.trim().toLowerCase();
 
-        return (
-            product.name?.toLowerCase().includes(searchText) ||
-            product.productname?.toLowerCase().includes(searchText) ||
-            product.category?.toLowerCase().includes(searchText)
+
+    // ---------------------------------------------------------
+    // CATEGORY SEARCH
+    // ---------------------------------------------------------
+
+    const categoryResults = searchText
+        ? allCategories
+            .filter(category =>
+                category
+                    .toLowerCase()
+                    .includes(searchText)
+            )
+            .map(category => ({
+                type: "category",
+                name: category
+            }))
+        : [];
+
+
+    // ---------------------------------------------------------
+    // SUBCATEGORY SEARCH
+    // ---------------------------------------------------------
+
+    const subcategoryResults = searchText
+        ? allSubcategories
+            .filter(subcategory =>
+                subcategory
+                    .toLowerCase()
+                    .includes(searchText)
+            )
+            .map(subcategory => ({
+                type: "subcategory",
+                name: subcategory
+            }))
+        : [];
+
+
+    // ---------------------------------------------------------
+    // PRODUCT SEARCH
+    // ---------------------------------------------------------
+
+    const productResults = searchText
+        ? Allproducts
+            .filter(product => {
+
+                const name =
+                    product.name?.toLowerCase() || "";
+
+                const productname =
+                    product.productname?.toLowerCase() || "";
+
+                const category =
+                    product.category?.toLowerCase() || "";
+
+                const subcategory =
+                    product.subcategory?.toLowerCase() || "";
+
+                return (
+                    name.includes(searchText) ||
+                    productname.includes(searchText) ||
+                    category.includes(searchText) ||
+                    subcategory.includes(searchText)
+                );
+
+            })
+            .map(product => ({
+                type: "product",
+                name:
+                    product.name ||
+                    product.productname,
+
+                price: product.price,
+
+                image:
+                    product.image?.[0] ||
+                    product.photo?.[0],
+
+                data: product
+            }))
+        : [];
+
+
+    // =========================================================
+    // COMBINE RESULTS
+    // =========================================================
+
+    const searchResults = [
+
+        ...categoryResults,
+
+        ...subcategoryResults,
+
+        ...productResults
+
+    ];
+
+
+    // =========================================================
+    // CATEGORY CLICK
+    // =========================================================
+
+    const handleCategoryClick = (category) => {
+
+        setSearch("");
+        setShowResults(false);
+
+        navigate(
+            `/category/${encodeURIComponent(category)}`
         );
 
-    });
+    };
 
+
+    // =========================================================
+    // SUBCATEGORY CLICK
+    // =========================================================
+
+    const handleSubcategoryClick = (subcategory) => {
+
+        setSearch("");
+        setShowResults(false);
+
+        navigate(
+            `/category/${encodeURIComponent(subcategory)}`
+        );
+
+    };
+
+
+    // =========================================================
+    // PRODUCT CLICK
+    // =========================================================
 
     const handleProductClick = (product) => {
 
         setSearch("");
         setShowResults(false);
 
-        navigate(`/product/${product.id}`);
+        navigate(
+            `/product/${product.id}`
+        );
 
     };
 
 
+    // =========================================================
+    // SEARCH INPUT
+    // =========================================================
+
+    const handleSearchChange = (e) => {
+
+        const value = e.target.value;
+
+        setSearch(value);
+
+        if (value.trim() !== "") {
+
+            setShowResults(true);
+
+        } else {
+
+            setShowResults(false);
+
+        }
+
+    };
+
+
+    // =========================================================
     // LOCATION INPUT
+    // =========================================================
+
     const handleLocationChange = (e) => {
 
         setLocation({
@@ -58,7 +324,10 @@ export default function Header() {
     };
 
 
+    // =========================================================
     // SAVE LOCATION
+    // =========================================================
+
     const handleLocationSubmit = (e) => {
 
         e.preventDefault();
@@ -73,121 +342,344 @@ export default function Header() {
     };
 
 
+    // =========================================================
+    // RETURN
+    // =========================================================
+
     return (
+
         <>
+
+            {/* =================================================
+                HEADER
+            ================================================= */}
+
             <header className="header">
 
-                {/* LOGO */}
-                <Link to="/" className="logo">
+
+                {/* =================================================
+                    LOGO
+                ================================================= */}
+
+                <Link
+                    to="/"
+                    className="logo"
+                >
+
                     <span>YAZHL</span> Crafts
+
                 </Link>
 
 
-                {/* SEARCH */}
+                {/* =================================================
+                    SEARCH
+                ================================================= */}
+
                 <div className="search-box">
 
                     <input
                         type="text"
                         value={search}
-                        placeholder="Search for products..."
-                        onChange={(e) => {
-                            setSearch(e.target.value);
-                            setShowResults(true);
+                        placeholder="Search products, categories..."
+                        onChange={handleSearchChange}
+
+                        onFocus={() => {
+
+                            if (search.trim() !== "") {
+                                setShowResults(true);
+                            }
+
                         }}
                     />
 
-                    <button>
+
+                    <button
+                        type="button"
+                        onClick={() => {
+
+                            if (search.trim() !== "") {
+                                setShowResults(true);
+                            }
+
+                        }}
+                    >
+
                         <i className="bi bi-search"></i>
+
                     </button>
 
 
-                    {showResults && search.trim() !== "" && (
+                    {/* =================================================
+                        SEARCH RESULTS
+                    ================================================= */}
 
-                        <div className="search-results">
+                    {showResults &&
+                        search.trim() !== "" && (
 
-                            {filteredProducts.length > 0 ? (
+                            <div className="search-results">
 
-                                filteredProducts
-                                    .slice(0, 6)
-                                    .map((product) => (
 
-                                        <div
-                                            className="search-result-item"
-                                            key={product.id}
-                                            onClick={() =>
-                                                handleProductClick(product)
-                                            }
-                                        >
+                                {searchResults.length > 0 ? (
 
-                                            <img
-                                                src={
-                                                    product.image?.[0] ||
-                                                    product.photo?.[0]
+                                    <>
+
+
+                                        {/* =================================================
+                                            CATEGORY RESULTS
+                                        ================================================= */}
+
+                                        {categoryResults.length > 0 && (
+
+                                            <>
+
+                                                <div className="search-result-heading">
+
+                                                    <span>
+                                                        Categories
+                                                    </span>
+
+                                                </div>
+
+
+                                                {categoryResults
+                                                    .slice(0, 4)
+                                                    .map((result) => (
+
+                                                        <div
+                                                            className="search-result-item search-category-item"
+                                                            key={`category-${result.name}`}
+
+                                                            onClick={() =>
+                                                                handleCategoryClick(
+                                                                    result.name
+                                                                )
+                                                            }
+                                                        >
+
+                                                            <div className="search-category-icon">
+
+                                                                <i className="bi bi-grid"></i>
+
+                                                            </div>
+
+
+                                                            <div className="search-result-details">
+
+                                                                <h4>
+                                                                    {result.name}
+                                                                </h4>
+
+                                                                <p>
+                                                                    Category
+                                                                </p>
+
+                                                            </div>
+
+
+                                                            <i className="bi bi-chevron-right search-arrow"></i>
+
+                                                        </div>
+
+                                                    ))
                                                 }
-                                                alt={
-                                                    product.name ||
-                                                    product.productname
+
+                                            </>
+
+                                        )}
+
+
+                                        {/* =================================================
+                                            SUBCATEGORY RESULTS
+                                        ================================================= */}
+
+                                        {subcategoryResults.length > 0 && (
+
+                                            <>
+
+                                                <div className="search-result-heading">
+
+                                                    <span>
+                                                        Subcategories
+                                                    </span>
+
+                                                </div>
+
+
+                                                {subcategoryResults
+                                                    .slice(0, 5)
+                                                    .map((result) => (
+
+                                                        <div
+                                                            className="search-result-item search-category-item"
+                                                            key={`subcategory-${result.name}`}
+
+                                                            onClick={() =>
+                                                                handleSubcategoryClick(
+                                                                    result.name
+                                                                )
+                                                            }
+                                                        >
+
+                                                            <div className="search-category-icon">
+
+                                                                <i className="bi bi-tags"></i>
+
+                                                            </div>
+
+
+                                                            <div className="search-result-details">
+
+                                                                <h4>
+                                                                    {result.name}
+                                                                </h4>
+
+                                                                <p>
+                                                                    Subcategory
+                                                                </p>
+
+                                                            </div>
+
+
+                                                            <i className="bi bi-chevron-right search-arrow"></i>
+
+                                                        </div>
+
+                                                    ))
                                                 }
-                                            />
 
-                                            <div className="search-result-details">
+                                            </>
 
-                                                <h4>
-                                                    {product.name ||
-                                                        product.productname}
-                                                </h4>
+                                        )}
 
-                                                <p>
-                                                    ₹
-                                                    {Number(
-                                                        product.price
-                                                    ).toLocaleString("en-IN")}
-                                                </p>
 
-                                            </div>
+                                        {/* =================================================
+                                            PRODUCT RESULTS
+                                        ================================================= */}
 
-                                        </div>
+                                        {productResults.length > 0 && (
 
-                                    ))
+                                            <>
 
-                            ) : (
+                                                <div className="search-result-heading">
 
-                                <div className="no-results">
-                                    No products found
-                                </div>
+                                                    <span>
+                                                        Products
+                                                    </span>
 
-                            )}
+                                                </div>
 
-                        </div>
 
-                    )}
+                                                {productResults
+                                                    .slice(0, 6)
+                                                    .map((result) => (
+
+                                                        <div
+                                                            className="search-result-item"
+
+                                                            key={`product-${result.data.id}`}
+
+                                                            onClick={() =>
+                                                                handleProductClick(
+                                                                    result.data
+                                                                )
+                                                            }
+                                                        >
+
+                                                            <img
+                                                                src={result.image}
+                                                                alt={result.name}
+                                                            />
+
+
+                                                            <div className="search-result-details">
+
+                                                                <h4>
+                                                                    {result.name}
+                                                                </h4>
+
+                                                                <p>
+                                                                    ₹
+                                                                    {Number(
+                                                                        result.price
+                                                                    ).toLocaleString(
+                                                                        "en-IN"
+                                                                    )}
+                                                                </p>
+
+                                                            </div>
+
+                                                        </div>
+
+                                                    ))
+                                                }
+
+                                            </>
+
+                                        )}
+
+                                    </>
+
+                                ) : (
+
+                                    <div className="no-results">
+
+                                        <i className="bi bi-search"></i>
+
+                                        <span>
+                                            No products or categories found
+                                        </span>
+
+                                    </div>
+
+                                )}
+
+                            </div>
+
+                        )}
 
                 </div>
 
 
-                {/* HEADER ACTIONS */}
+                {/* =================================================
+                    HEADER ACTIONS
+                ================================================= */}
+
                 <div className="header-actions">
 
 
-                    {/* DELIVERY LOCATION */}
+                    {/* =================================================
+                        DELIVERY LOCATION
+                    ================================================= */}
+
                     <button
                         className="action"
-                        onClick={() => setShowLocation(true)}
+
+                        onClick={() =>
+                            setShowLocation(true)
+                        }
                     >
 
                         <i className="bi bi-geo-alt"></i>
 
                         <div>
-                            <small>Deliver to</small>
+
+                            <small>
+                                Deliver to
+                            </small>
+
                             <span>
                                 {location.city || "Location"}
                             </span>
+
                         </div>
 
                     </button>
 
 
-                    {/* CART */}
+                    {/* =================================================
+                        CART
+                    ================================================= */}
+
                     <Link
                         to="/cart"
                         className="action"
@@ -196,14 +688,24 @@ export default function Header() {
                         <i className="bi bi-cart3"></i>
 
                         <div>
-                            <small>My</small>
-                            <span>Cart</span>
+
+                            <small>
+                                My
+                            </small>
+
+                            <span>
+                                Cart
+                            </span>
+
                         </div>
 
                     </Link>
 
 
-                    {/* LOGIN */}
+                    {/* =================================================
+                        LOGIN
+                    ================================================= */}
+
                     <Link
                         to="/login"
                         className="action"
@@ -212,8 +714,15 @@ export default function Header() {
                         <i className="bi bi-person-circle"></i>
 
                         <div>
-                            <small>Hii</small>
-                            <span>Login</span>
+
+                            <small>
+                                Hii
+                            </small>
+
+                            <span>
+                                Login
+                            </span>
+
                         </div>
 
                     </Link>
@@ -223,60 +732,105 @@ export default function Header() {
             </header>
 
 
+            {/* =================================================
+                CATEGORY
+            ================================================= */}
+
             <Category />
 
 
-            {/* LOCATION POPUP */}
+            {/* =================================================
+                LOCATION POPUP
+            ================================================= */}
+
             {showLocation && (
 
                 <div
                     className="location-overlay"
-                    onClick={() => setShowLocation(false)}
+
+                    onClick={() =>
+                        setShowLocation(false)
+                    }
                 >
 
                     <div
                         className="location-popup"
-                        onClick={(e) => e.stopPropagation()}
+
+                        onClick={(e) =>
+                            e.stopPropagation()
+                        }
                     >
 
-                        {/* HEADER */}
+
+                        {/* =================================================
+                            POPUP HEADER
+                        ================================================= */}
+
                         <div className="location-popup-header">
 
                             <div>
-                                <h2>Delivery Location</h2>
+
+                                <h2>
+                                    Delivery Location
+                                </h2>
 
                                 <p>
                                     Enter your delivery address
                                 </p>
+
                             </div>
+
 
                             <button
                                 className="location-close"
+
                                 onClick={() =>
                                     setShowLocation(false)
                                 }
                             >
+
                                 ×
+
                             </button>
 
                         </div>
 
 
-                        <form onSubmit={handleLocationSubmit}>
+                        {/* =================================================
+                            LOCATION FORM
+                        ================================================= */}
+
+                        <form
+                            onSubmit={
+                                handleLocationSubmit
+                            }
+                        >
+
 
                             {/* NAME + PHONE */}
+
                             <div className="location-row">
+
 
                                 <div className="location-field">
 
-                                    <label>Name</label>
+                                    <label>
+                                        Name
+                                    </label>
 
                                     <input
                                         type="text"
                                         name="name"
                                         placeholder="Enter your name"
-                                        value={location.name}
-                                        onChange={handleLocationChange}
+
+                                        value={
+                                            location.name
+                                        }
+
+                                        onChange={
+                                            handleLocationChange
+                                        }
+
                                         required
                                     />
 
@@ -285,14 +839,23 @@ export default function Header() {
 
                                 <div className="location-field">
 
-                                    <label>Phone Number</label>
+                                    <label>
+                                        Phone Number
+                                    </label>
 
                                     <input
                                         type="tel"
                                         name="phone"
                                         placeholder="Enter phone number"
-                                        value={location.phone}
-                                        onChange={handleLocationChange}
+
+                                        value={
+                                            location.phone
+                                        }
+
+                                        onChange={
+                                            handleLocationChange
+                                        }
+
                                         required
                                     />
 
@@ -302,15 +865,25 @@ export default function Header() {
 
 
                             {/* ADDRESS */}
+
                             <div className="location-field">
 
-                                <label>Address</label>
+                                <label>
+                                    Address
+                                </label>
 
                                 <textarea
                                     name="address"
                                     placeholder="House / Street / Area"
-                                    value={location.address}
-                                    onChange={handleLocationChange}
+
+                                    value={
+                                        location.address
+                                    }
+
+                                    onChange={
+                                        handleLocationChange
+                                    }
+
                                     required
                                 />
 
@@ -318,18 +891,29 @@ export default function Header() {
 
 
                             {/* CITY + STATE */}
+
                             <div className="location-row">
+
 
                                 <div className="location-field">
 
-                                    <label>City</label>
+                                    <label>
+                                        City
+                                    </label>
 
                                     <input
                                         type="text"
                                         name="city"
                                         placeholder="City"
-                                        value={location.city}
-                                        onChange={handleLocationChange}
+
+                                        value={
+                                            location.city
+                                        }
+
+                                        onChange={
+                                            handleLocationChange
+                                        }
+
                                         required
                                     />
 
@@ -338,14 +922,23 @@ export default function Header() {
 
                                 <div className="location-field">
 
-                                    <label>State</label>
+                                    <label>
+                                        State
+                                    </label>
 
                                     <input
                                         type="text"
                                         name="state"
                                         placeholder="State"
-                                        value={location.state}
-                                        onChange={handleLocationChange}
+
+                                        value={
+                                            location.state
+                                        }
+
+                                        onChange={
+                                            handleLocationChange
+                                        }
+
                                         required
                                     />
 
@@ -355,28 +948,43 @@ export default function Header() {
 
 
                             {/* PINCODE */}
+
                             <div className="location-field">
 
-                                <label>Pincode</label>
+                                <label>
+                                    Pincode
+                                </label>
 
                                 <input
                                     type="text"
                                     name="pincode"
                                     placeholder="Enter pincode"
-                                    value={location.pincode}
-                                    onChange={handleLocationChange}
+
+                                    value={
+                                        location.pincode
+                                    }
+
+                                    onChange={
+                                        handleLocationChange
+                                    }
+
                                     maxLength="6"
+
                                     required
                                 />
 
                             </div>
 
 
+                            {/* SAVE */}
+
                             <button
                                 type="submit"
                                 className="save-location-btn"
                             >
+
                                 Save Delivery Location
+
                             </button>
 
                         </form>
@@ -388,5 +996,7 @@ export default function Header() {
             )}
 
         </>
+
     );
+
 }

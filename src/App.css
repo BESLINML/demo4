@@ -2954,6 +2954,7 @@ img {
        MOBILE CATEGORY MENU
        ========================= */
 
+
     .category-container {
         position: sticky;
         top: 75px;
@@ -3698,3 +3699,256 @@ img {
    - Location form becomes single column
    - Footer becomes single column
 ========================================================= 
+
+/* =========================================
+   CATEGORY CONTAINER
+========================================= */
+
+.category-container {
+    width: 100%;
+    position: relative;
+    background: #fff;
+    z-index: 10;
+}
+
+
+/* =========================================
+   DESKTOP CATEGORY ROW
+========================================= */
+
+.category-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 12px 15px;
+}
+
+
+/* =========================================
+   MAIN CATEGORY BUTTON
+========================================= */
+
+.category {
+    border: none;
+    background: transparent;
+    padding: 10px 14px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    transition: 0.3s ease;
+    white-space: nowrap;
+}
+
+.category:hover {
+    color: #007bff;
+}
+
+.category.active {
+    color: #007bff;
+}
+
+
+/* Chevron */
+
+.category i {
+    font-size: 12px;
+    transition: transform 0.3s ease;
+}
+
+.category.active i {
+    transform: rotate(180deg);
+}
+
+
+/* =========================================
+   DESKTOP SUBCATEGORY
+========================================= */
+
+.subcategory-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px 20px;
+    background: #f8f9fa;
+    border-top: 1px solid #eee;
+}
+
+
+.subcategory {
+    border: none;
+    background: white;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.subcategory:hover {
+    background: #007bff;
+    color: white;
+}
+
+.subcategory.active {
+    background: #007bff;
+    color: white;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 768px) {
+
+    .category-container {
+        width: 100%;
+        background: #fff;
+    }
+
+
+    /* Main categories vertical */
+
+    .category-row {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        gap: 0;
+        padding: 0;
+        width: 100%;
+    }
+
+
+    /* Each main category */
+
+    .category {
+        width: 100%;
+        min-height: 48px;
+
+        padding: 13px 18px;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        border-bottom: 1px solid #e5e5e5;
+
+        background: white;
+
+        font-size: 15px;
+        font-weight: 600;
+
+        text-align: left;
+
+        cursor: pointer;
+    }
+
+
+    .category:hover {
+        background: #f7f7f7;
+        color: #007bff;
+    }
+
+
+    .category.active {
+        background: #f5f8ff;
+        color: #007bff;
+    }
+
+
+    /* Chevron */
+
+    .category i {
+        margin-left: auto;
+        font-size: 12px;
+    }
+
+
+    .category.active i {
+        transform: rotate(180deg);
+    }
+
+
+    /* =====================================
+       MOBILE SUBCATEGORY
+    ===================================== */
+
+    .subcategory-row {
+        width: 100%;
+
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+
+        gap: 0;
+
+        padding: 0;
+
+        background: #f8f9fa;
+
+        border-top: none;
+        border-bottom: 1px solid #ddd;
+    }
+
+
+    .subcategory {
+        width: 100%;
+
+        padding: 12px 35px;
+
+        border-radius: 0;
+        border: none;
+
+        border-bottom: 1px solid #e8e8e8;
+
+        background: #f8f9fa;
+
+        font-size: 14px;
+
+        text-align: left;
+
+        color: #333;
+    }
+
+
+    .subcategory:hover {
+        background: #e9f2ff;
+        color: #007bff;
+    }
+
+
+    .subcategory.active {
+        background: #e9f2ff;
+        color: #007bff;
+        font-weight: 600;
+    }
+
+}
+
+
+/* =========================================
+   SMALL MOBILE
+========================================= */
+
+@media (max-width: 480px) {
+
+    .category {
+        min-height: 46px;
+        padding: 12px 15px;
+        font-size: 14px;
+    }
+
+    .subcategory {
+        padding: 11px 30px;
+        font-size: 13px;
+    }
+
+}

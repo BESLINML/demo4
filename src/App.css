@@ -5,14 +5,6 @@
 
 
 /* =========================================================
-   GOOGLE FONT
-========================================================= */
-
-/* If you already import fonts in index.css or index.html,
-   you don't need another @import here. */
-
-
-/* =========================================================
    GLOBAL
 ========================================================= */
 
@@ -331,7 +323,7 @@ img {
 
 /* =========================================================
    MOBILE CATEGORY TOGGLE
-   Hidden on desktop
+   HIDDEN ON DESKTOP
 ========================================================= */
 
 .mobile-category-toggle {
@@ -340,7 +332,7 @@ img {
 
 
 /* =========================================================
-   CATEGORY ROW
+   DESKTOP CATEGORY ROW
 ========================================================= */
 
 .category-row {
@@ -373,7 +365,7 @@ img {
 
 
 /* =========================================================
-   CATEGORY BUTTON
+   DESKTOP CATEGORY BUTTON
 ========================================================= */
 
 .category-row button {
@@ -436,7 +428,7 @@ img {
 
 
 /* =========================================================
-   SUBCATEGORY
+   DESKTOP SUBCATEGORY
 ========================================================= */
 
 .subcategory-row {
@@ -507,7 +499,7 @@ img {
 
 
 /* =========================================================
-   SUBCATEGORY ANIMATION
+   DESKTOP SUBCATEGORY ANIMATION
 ========================================================= */
 
 @keyframes subCategoryOpen {
@@ -523,7 +515,6 @@ img {
 
         transform: translateY(0);
     }
-
 }
 
 
@@ -1178,7 +1169,6 @@ img {
     to {
         opacity: 1;
     }
-
 }
 
 
@@ -1612,7 +1602,6 @@ img {
 
         transform: translateY(0) scale(1);
     }
-
 }
 
 
@@ -2344,7 +2333,7 @@ img {
 
 
     /* =====================================================
-       MOBILE CATEGORY ICON
+       MOBILE CATEGORY BUTTON
     ===================================================== */
 
     .mobile-category-toggle {
@@ -2356,13 +2345,11 @@ img {
 
         align-items: center;
 
-        justify-content: space-between;
-
         padding: 0 15px;
 
         border: none;
 
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid #e5e5e5;
 
         background: #fff;
 
@@ -2376,7 +2363,7 @@ img {
     .mobile-category-toggle i:first-child {
         font-size: 22px;
 
-        margin-right: 8px;
+        margin-right: 10px;
     }
 
     .mobile-category-toggle span {
@@ -2391,50 +2378,215 @@ img {
 
 
     /* =====================================================
-       MOBILE MAIN CATEGORY
-       HIDDEN BY DEFAULT
+       HIDE DESKTOP CATEGORY ON MOBILE
     ===================================================== */
 
-    .category-row {
+    .desktop-category-menu,
+    .desktop-subcategory-menu {
+        display: none !important;
+    }
+
+
+    /* =====================================================
+       MOBILE CATEGORY MENU
+    ===================================================== */
+
+    .mobile-category-menu {
         width: 100%;
-
-        min-height: auto;
-
-        display: none;
-
-        flex-direction: column;
-
-        align-items: stretch;
-
-        justify-content: flex-start;
-
-        gap: 4px;
-
-        padding: 8px 10px;
 
         background: #fff;
 
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid #ddd;
 
-        overflow: visible;
-
-        max-height: 70vh;
+        max-height: calc(100vh - 123px);
 
         overflow-y: auto;
+
+        overflow-x: hidden;
+
+        padding: 5px 0;
+
+        box-sizing: border-box;
+
+        animation: mobileCategoryOpen 0.25s ease;
 
         scrollbar-width: thin;
     }
 
 
     /* =====================================================
-       SHOW MAIN CATEGORY
+       MOBILE CATEGORY ITEM
     ===================================================== */
 
-    .category-row.mobile-open {
+    .mobile-category-item {
+        width: 100%;
+
+        border-bottom: 1px solid #eeeeee;
+
+        background: #fff;
+
+        box-sizing: border-box;
+    }
+
+    .mobile-category-item:last-child {
+        border-bottom: none;
+    }
+
+
+    /* =====================================================
+       MOBILE MAIN CATEGORY
+    ===================================================== */
+
+    .mobile-main-category {
+        width: 100%;
+
+        min-height: 48px;
+
         display: flex;
 
-        animation: mobileCategoryOpen 0.25s ease;
+        align-items: center;
+
+        justify-content: space-between;
+
+        padding: 12px 15px;
+
+        border: none;
+
+        background: #fff;
+
+        color: #333;
+
+        font-size: 14px;
+
+        font-weight: 500;
+
+        text-align: left;
+
+        cursor: pointer;
+
+        transition:
+            background 0.2s ease,
+            color 0.2s ease;
     }
+
+    .mobile-main-category span {
+        flex: 1;
+
+        padding-right: 10px;
+
+        text-align: left;
+
+        white-space: normal;
+
+        line-height: 1.4;
+    }
+
+    .mobile-main-category i {
+        flex-shrink: 0;
+
+        font-size: 12px;
+
+        transition: transform 0.2s ease;
+    }
+
+    .mobile-main-category:hover {
+        background: #f8f5ff;
+
+        color: #7c3aed;
+    }
+
+    .mobile-main-category.active {
+        background: #f2ebff;
+
+        color: #7c3aed;
+
+        font-weight: 600;
+    }
+
+
+    /* =====================================================
+       MOBILE SUBCATEGORY LIST
+    ===================================================== */
+
+    .mobile-subcategory-list {
+        width: 100%;
+
+        display: flex;
+
+        flex-direction: column;
+
+        background: #fafafa;
+
+        border-top: 1px solid #eee;
+
+        padding: 5px 0 7px;
+
+        box-sizing: border-box;
+
+        animation: mobileSubcategoryOpen 0.2s ease;
+    }
+
+
+    /* =====================================================
+       MOBILE SUBCATEGORY
+    ===================================================== */
+
+    .mobile-subcategory {
+        width: 100%;
+
+        min-height: 42px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        padding: 10px 18px 10px 30px;
+
+        border: none;
+
+        background: transparent;
+
+        color: #555;
+
+        font-size: 13px;
+
+        font-weight: 400;
+
+        text-align: left;
+
+        cursor: pointer;
+
+        transition:
+            background 0.2s ease,
+            color 0.2s ease;
+    }
+
+    .mobile-subcategory span {
+        flex: 1;
+
+        line-height: 1.4;
+    }
+
+    .mobile-subcategory i {
+        font-size: 10px;
+
+        margin-left: 10px;
+
+        color: #888;
+    }
+
+    .mobile-subcategory:hover {
+        background: #f3edff;
+
+        color: #7c3aed;
+    }
+
+
+    /* =====================================================
+       MOBILE CATEGORY ANIMATIONS
+    ===================================================== */
 
     @keyframes mobileCategoryOpen {
 
@@ -2452,136 +2604,20 @@ img {
 
     }
 
+    @keyframes mobileSubcategoryOpen {
 
-    /* =====================================================
-       MOBILE MAIN CATEGORY BUTTON
-    ===================================================== */
+        from {
+            opacity: 0;
 
-    .category-row .category {
-        width: 100%;
+            transform: translateY(-5px);
+        }
 
-        min-height: 44px;
+        to {
+            opacity: 1;
 
-        display: flex;
+            transform: translateY(0);
+        }
 
-        align-items: center;
-
-        justify-content: space-between;
-
-        padding: 10px 13px;
-
-        border: none;
-
-        border-radius: 8px;
-
-        background: #fff;
-
-        color: #333;
-
-        font-size: 13px;
-
-        font-weight: 500;
-
-        text-align: left;
-    }
-
-    .category-row .category:hover {
-        background: #f5f0ff;
-
-        color: #7c3aed;
-    }
-
-    .category-row .category.active {
-        background: #f2ebff;
-
-        color: #7c3aed;
-
-        font-weight: 600;
-    }
-
-    .category-row .category i {
-        font-size: 11px;
-
-        margin-left: auto;
-    }
-
-
-    /* =====================================================
-       MOBILE SUBCATEGORY
-    ===================================================== */
-
-    .subcategory-row {
-        width: 100%;
-
-        min-height: auto;
-
-        display: flex;
-
-        flex-direction: column;
-
-        align-items: stretch;
-
-        justify-content: flex-start;
-
-        gap: 5px;
-
-        padding: 8px 15px 10px 25px;
-
-        background: #fafafa;
-
-        border-bottom: 1px solid #eee;
-
-        overflow-y: auto;
-
-        overflow-x: hidden;
-
-        max-height: 50vh;
-
-        scrollbar-width: thin;
-
-        animation: subCategoryOpen 0.25s ease;
-    }
-
-    .subcategory-row .subcategory {
-        width: 100%;
-
-        min-height: 40px;
-
-        padding: 9px 12px;
-
-        border: 1px solid #e5e5e5;
-
-        border-radius: 7px;
-
-        background: #fff;
-
-        color: #555;
-
-        font-size: 12px;
-
-        text-align: left;
-
-        cursor: pointer;
-
-        transition: all 0.2s ease;
-    }
-
-    .subcategory-row .subcategory:hover {
-        color: #7c3aed;
-
-        background: #f3edff;
-
-        border-color: #d8c7ff;
-    }
-
-    .subcategory-row .subcategory.active {
-        color: #7c3aed;
-
-        background: #f2ebff;
-
-        border-color: #cbb4ff;
-
-        font-weight: 600;
     }
 
 
@@ -3241,7 +3277,10 @@ img {
 
 @media (max-width: 400px) {
 
-    /* HEADER */
+
+    /* =====================================================
+       HEADER
+    ===================================================== */
 
     .logo {
         font-size: 20px;
@@ -3256,7 +3295,9 @@ img {
     }
 
 
-    /* CATEGORY */
+    /* =====================================================
+       MOBILE CATEGORY
+    ===================================================== */
 
     .mobile-category-toggle {
         height: 45px;
@@ -3270,26 +3311,26 @@ img {
         font-size: 20px;
     }
 
-    .category-row .category {
-        min-height: 42px;
+    .mobile-main-category {
+        min-height: 44px;
+
+        padding: 10px 12px;
+
+        font-size: 13px;
+    }
+
+    .mobile-subcategory {
+        min-height: 40px;
+
+        padding: 9px 15px 9px 27px;
 
         font-size: 12px;
-
-        padding: 9px 11px;
-    }
-
-    .subcategory-row {
-        padding-left: 20px;
-    }
-
-    .subcategory-row .subcategory {
-        min-height: 38px;
-
-        font-size: 11px;
     }
 
 
-    /* HERO */
+    /* =====================================================
+       HERO
+    ===================================================== */
 
     .hero-banner {
         height: 200px;
@@ -3302,7 +3343,9 @@ img {
     }
 
 
-    /* SPECIAL CATEGORIES */
+    /* =====================================================
+       SPECIAL CATEGORIES
+    ===================================================== */
 
     .home-specialcat {
         gap: 15px;
@@ -3327,7 +3370,9 @@ img {
     }
 
 
-    /* PRODUCTS */
+    /* =====================================================
+       PRODUCTS
+    ===================================================== */
 
     .home-product-image,
     .subcategory-card img {
@@ -3353,7 +3398,9 @@ img {
     }
 
 
-    /* PRODUCT DETAILS */
+    /* =====================================================
+       PRODUCT DETAILS
+    ===================================================== */
 
     .product-main-image {
         height: 260px;
@@ -3370,7 +3417,9 @@ img {
     }
 
 
-    /* CART */
+    /* =====================================================
+       CART
+    ===================================================== */
 
     .cart-product {
         grid-template-columns:
@@ -3394,7 +3443,9 @@ img {
     }
 
 
-    /* FOOTER */
+    /* =====================================================
+       FOOTER
+    ===================================================== */
 
     .footer-container {
         width: 88%;

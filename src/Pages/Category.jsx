@@ -7,11 +7,19 @@ export default function Category() {
 
     const navigate = useNavigate();
 
+    // =========================================================
+    // DESKTOP STATE
+    // =========================================================
+
     const [activeCategory, setActiveCategory] = useState(null);
     const [selectedSubcategory, setSelectedSubcategory] = useState(null);
 
-    // Mobile menu open/close
+    // =========================================================
+    // MOBILE STATE
+    // =========================================================
+
     const [mobileCategoryOpen, setMobileCategoryOpen] = useState(false);
+    const [mobileActiveCategory, setMobileActiveCategory] = useState(null);
 
     const categoryRef = useRef(null);
 
@@ -73,6 +81,7 @@ export default function Category() {
             "Limited Edition",
             "Personalized Combos"
         ]
+
     };
 
 
@@ -99,29 +108,39 @@ export default function Category() {
     // GET SUBCATEGORIES
     // =========================================================
 
-    const productSubcategories = activeCategory
-        ? Allproducts
+    const getSubcategories = (category) => {
+
+        const productSubcategories = Allproducts
             .filter(
                 product =>
-                    product.category === activeCategory
+                    product.category === category
             )
             .map(product => product.subcategory)
-            .filter(Boolean)
-        : [];
+            .filter(Boolean);
 
 
-    const subcategories = activeCategory
-        ? [
+        return [
             ...new Set([
                 ...productSubcategories,
-                ...(manualSubCategories[activeCategory] || [])
+                ...(manualSubCategories[category] || [])
             ])
-        ]
-        : [];
+        ];
+    };
 
 
     // =========================================================
-    // CATEGORY CLICK
+    // CHECK WHETHER CATEGORY HAS SUBCATEGORIES
+    // =========================================================
+
+    const hasSubcategories = (category) => {
+
+        return getSubcategories(category).length > 0;
+
+    };
+
+
+    // =========================================================
+    // DESKTOP CATEGORY CLICK
     // =========================================================
 
     const handleCategoryClick = (category) => {
@@ -137,6 +156,28 @@ export default function Category() {
             setSelectedSubcategory(null);
 
         }
+
+    };
+
+
+    // =========================================================
+    // MOBILE CATEGORY CLICK
+    // =========================================================
+
+    const handleMobileCategoryClick = (category) => {
+
+        // If same category is clicked again
+        if (mobileActiveCategory === category) {
+
+            setMobileActiveCategory(null);
+
+            return;
+        }
+
+
+        // Open selected category immediately
+        setMobileActiveCategory(category);
+
     };
 
 
@@ -152,11 +193,16 @@ export default function Category() {
             `/category/${encodeURIComponent(subcategory)}`
         );
 
-        // Close mobile menu after navigation
+
+        // Close everything after navigation
         setMobileCategoryOpen(false);
 
+        setMobileActiveCategory(null);
+
         setActiveCategory(null);
+
         setSelectedSubcategory(null);
+
     };
 
 
@@ -166,11 +212,21 @@ export default function Category() {
 
     const handleMobileCategoryToggle = () => {
 
-        setMobileCategoryOpen(prev => !prev);
+        setMobileCategoryOpen(prev => {
 
-        // Reset selected category when opening/closing
-        setActiveCategory(null);
-        setSelectedSubcategory(null);
+            const newValue = !prev;
+
+            // When closing menu
+            if (!newValue) {
+
+                setMobileActiveCategory(null);
+
+            }
+
+            return newValue;
+
+        });
+
     };
 
 
@@ -188,10 +244,15 @@ export default function Category() {
             ) {
 
                 setActiveCategory(null);
+
                 setSelectedSubcategory(null);
 
                 setMobileCategoryOpen(false);
+
+                setMobileActiveCategory(null);
+
             }
+
         };
 
 
@@ -226,7 +287,7 @@ export default function Category() {
 
 
             {/* =================================================
-                MOBILE CATEGORY ICON
+                MOBILE CATEGORY BUTTON
             ================================================= */}
 
             <button
@@ -236,7 +297,9 @@ export default function Category() {
 
                 <i className="bi bi-list"></i>
 
-                <span>Categories</span>
+                <span>
+                    Categories
+                </span>
 
                 <i
                     className={
@@ -272,20 +335,23 @@ export default function Category() {
                             }
                         >
 
-                            {category}
+                            <span>
+                                {category}
+                            </span>
+
 
                             {
-                                (
-                                    manualSubCategories[category] ||
+                                hasSubcategories(category) && (
 
-                                    Allproducts.some(
-                                        product =>
-                                            product.category === category &&
-                                            product.subcategory
-                                    )
+                                    <i
+                                        className={
+                                            activeCategory === category
+                                                ? "bi bi-chevron-up"
+                                                : "bi bi-chevron-down"
+                                        }
+                                    ></i>
+
                                 )
-                                &&
-                                <i className="bi bi-chevron-down"></i>
                             }
 
                         </button>
@@ -302,34 +368,36 @@ export default function Category() {
 
             {
                 activeCategory &&
-                subcategories.length > 0 &&
-
-                (
+                getSubcategories(activeCategory).length > 0 && (
 
                     <div className="subcategory-row desktop-subcategory-menu">
 
                         {
-                            subcategories.map(subcategory => (
+                            getSubcategories(activeCategory).map(
+                                subcategory => (
 
-                                <button
-                                    key={subcategory}
+                                    <button
+                                        key={subcategory}
 
-                                    className={
-                                        selectedSubcategory === subcategory
-                                            ? "subcategory active"
-                                            : "subcategory"
-                                    }
+                                        className={
+                                            selectedSubcategory === subcategory
+                                                ? "subcategory active"
+                                                : "subcategory"
+                                        }
 
-                                    onClick={() =>
-                                        handleSubcategoryClick(subcategory)
-                                    }
-                                >
+                                        onClick={() =>
+                                            handleSubcategoryClick(
+                                                subcategory
+                                            )
+                                        }
+                                    >
 
-                                    {subcategory}
+                                        {subcategory}
 
-                                </button>
+                                    </button>
 
-                            ))
+                                )
+                            )
                         }
 
                     </div>
@@ -343,121 +411,118 @@ export default function Category() {
             ================================================= */}
 
             {
-                mobileCategoryOpen &&
-
-                (
+                mobileCategoryOpen && (
 
                     <div className="mobile-category-menu">
 
+                        {
+                            categories.map(category => {
 
-                        {/* MAIN CATEGORIES */}
+                                const categorySubcategories =
+                                    getSubcategories(category);
 
-                        <div className="mobile-main-categories">
+                                const isActive =
+                                    mobileActiveCategory === category;
 
-                            {
-                                categories.map(category => (
 
-                                    <button
-                                        key={category}
+                                return (
 
+                                    <div
                                         className={
-                                            activeCategory === category
-                                                ? "mobile-main-category active"
-                                                : "mobile-main-category"
+                                            isActive
+                                                ? "mobile-category-item active"
+                                                : "mobile-category-item"
                                         }
-
-                                        onClick={() =>
-                                            handleCategoryClick(category)
-                                        }
+                                        key={category}
                                     >
 
-                                        <span>
-                                            {category}
-                                        </span>
 
+                                        {/* MAIN CATEGORY */}
+
+                                        <button
+                                            className={
+                                                isActive
+                                                    ? "mobile-main-category active"
+                                                    : "mobile-main-category"
+                                            }
+
+                                            onClick={() =>
+                                                handleMobileCategoryClick(
+                                                    category
+                                                )
+                                            }
+                                        >
+
+                                            <span>
+                                                {category}
+                                            </span>
+
+
+                                            {
+                                                categorySubcategories.length > 0 && (
+
+                                                    <i
+                                                        className={
+                                                            isActive
+                                                                ? "bi bi-chevron-up"
+                                                                : "bi bi-chevron-down"
+                                                        }
+                                                    ></i>
+
+                                                )
+                                            }
+
+                                        </button>
+
+
+                                        {/* =================================================
+                                            SUBCATEGORIES
+                                        ================================================= */}
 
                                         {
-                                            (
-                                                manualSubCategories[category] ||
+                                            isActive &&
+                                            categorySubcategories.length > 0 && (
 
-                                                Allproducts.some(
-                                                    product =>
-                                                        product.category === category &&
-                                                        product.subcategory
-                                                )
-                                            )
-                                            &&
-                                            (
-                                                <i
-                                                    className={
-                                                        activeCategory === category
-                                                            ? "bi bi-chevron-up"
-                                                            : "bi bi-chevron-down"
+                                                <div className="mobile-subcategory-list">
+
+                                                    {
+                                                        categorySubcategories.map(
+                                                            subcategory => (
+
+                                                                <button
+                                                                    key={subcategory}
+
+                                                                    className="mobile-subcategory"
+
+                                                                    onClick={() =>
+                                                                        handleSubcategoryClick(
+                                                                            subcategory
+                                                                        )
+                                                                    }
+                                                                >
+
+                                                                    <span>
+                                                                        {subcategory}
+                                                                    </span>
+
+                                                                    <i className="bi bi-chevron-right"></i>
+
+                                                                </button>
+
+                                                            )
+                                                        )
                                                     }
-                                                ></i>
+
+                                                </div>
+
                                             )
                                         }
-
-                                    </button>
-
-                                ))
-                            }
-
-                        </div>
-
-
-                        {/* =================================================
-                            MOBILE SUBCATEGORIES
-                        ================================================= */}
-
-                        {
-                            activeCategory &&
-                            subcategories.length > 0 &&
-
-                            (
-
-                                <div className="mobile-subcategory-menu">
-
-                                    <div className="mobile-subcategory-title">
-
-                                        <i className="bi bi-arrow-right"></i>
-
-                                        <span>
-                                            {activeCategory}
-                                        </span>
 
                                     </div>
 
+                                );
 
-                                    {
-                                        subcategories.map(subcategory => (
-
-                                            <button
-                                                key={subcategory}
-
-                                                className="mobile-subcategory"
-
-                                                onClick={() =>
-                                                    handleSubcategoryClick(
-                                                        subcategory
-                                                    )
-                                                }
-                                            >
-
-                                                <span>
-                                                    {subcategory}
-                                                </span>
-
-                                                <i className="bi bi-chevron-right"></i>
-
-                                            </button>
-
-                                        ))
-                                    }
-
-                                </div>
-
-                            )
+                            })
                         }
 
                     </div>
@@ -469,4 +534,5 @@ export default function Category() {
         </div>
 
     );
+
 }

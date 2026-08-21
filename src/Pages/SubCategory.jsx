@@ -1,164 +1,859 @@
-import { useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
-import Allproducts from "../Products/Allproducts";
+import {
+    getProducts,
+    deleteProduct
+} from "../api/productApi";
+
+
+// =====================================================
+// SUBCATEGORY PAGE
+// =====================================================
 
 export default function Subcategory() {
 
     const { subcategory } = useParams();
+
     const navigate = useNavigate();
 
-    const name = decodeURIComponent(subcategory);
 
-    const products = useMemo(() => {
+    // =====================================================
+    // SUBCATEGORY NAME
+    // =====================================================
 
-        return Allproducts.filter(
-            product => product.subcategory === name
+    const name =
+        decodeURIComponent(
+            subcategory || ""
         );
 
-    }, [name]);
 
+    // =====================================================
+    // PRODUCTS
+    // =====================================================
+
+    const [products, setProducts] =
+        useState([]);
+
+
+    const [loading, setLoading] =
+        useState(true);
+
+
+    // =====================================================
+    // ADMIN
+    // =====================================================
+
+    const [isAdmin, setIsAdmin] =
+        useState(false);
+
+
+    // =====================================================
+    // CHECK ADMIN
+    // =====================================================
+
+    useEffect(() => {
+
+        try {
+
+            const user =
+                JSON.parse(
+                    localStorage.getItem("user") ||
+                    "null"
+                );
+
+
+            const admin =
+                user?.role
+                    ?.toString()
+                    .toUpperCase() ===
+                "ADMIN";
+
+
+            console.log(
+                "SUBCATEGORY USER:",
+                user
+            );
+
+            console.log(
+                "SUBCATEGORY ADMIN:",
+                admin
+            );
+
+
+            setIsAdmin(admin);
+
+        } catch (error) {
+
+            console.error(
+                "Admin check error:",
+                error
+            );
+
+            setIsAdmin(false);
+
+        }
+
+    }, []);
+
+
+    // =====================================================
+    // LOAD PRODUCTS FROM SPRING BOOT + MYSQL
+    // =====================================================
+
+    useEffect(() => {
+
+        loadProducts();
+
+    }, []);
+
+
+    const loadProducts = async () => {
+
+        try {
+
+            setLoading(true);
+
+
+            const response =
+                await getProducts();
+
+
+            console.log(
+                "PRODUCTS FROM DATABASE:",
+                response.data
+            );
+
+
+            // Axios response
+
+            if (
+                response &&
+                Array.isArray(response.data)
+            ) {
+
+                setProducts(
+                    response.data
+                );
+
+            }
+
+            // If API directly returns array
+
+            else if (
+                Array.isArray(response)
+            ) {
+
+                setProducts(
+                    response
+                );
+
+            }
+
+            else {
+
+                setProducts([]);
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Failed to load products:",
+                error
+            );
+
+
+            setProducts([]);
+
+        } finally {
+
+            setLoading(false);
+
+        }
+
+    };
+
+
+    // =====================================================
+    // FILTER SUBCATEGORY
+    // =====================================================
+
+    const subcategoryProducts =
+        products.filter(
+            product => {
+
+                return (
+                    String(
+                        product.subcategory || ""
+                    ).trim().toLowerCase()
+                    ===
+                    String(
+                        name
+                    ).trim().toLowerCase()
+                );
+
+            }
+        );
+
+
+    // =====================================================
+    // DELETE PRODUCT
+    // =====================================================
+
+    const handleDelete = async (
+        event,
+        product
+    ) => {
+
+        // Prevent product card click
+
+        event.stopPropagation();
+
+
+        // Extra admin protection
+
+        if (!isAdmin) {
+
+            return;
+
+        }
+
+
+        const confirmed =
+            window.confirm(
+                `Are you sure you want to delete "${product.name}"?`
+            );
+
+
+        if (!confirmed) {
+
+            return;
+
+        }
+
+
+        try {
+
+            console.log(
+                "Deleting product:",
+                product.id
+            );
+
+
+            await deleteProduct(
+                product.id
+            );
+
+
+            // Remove from page immediately
+
+            setProducts(
+                previousProducts =>
+                    previousProducts.filter(
+                        item =>
+                            item.id !==
+                            product.id
+                    )
+            );
+
+
+            alert(
+                "Product deleted successfully"
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Delete product error:",
+                error
+            );
+
+
+            console.error(
+                "Server response:",
+                error.response?.data
+            );
+
+
+            alert(
+                "Failed to delete product"
+            );
+
+        }
+
+    };
+
+
+    // =====================================================
+    // EDIT PRODUCT
+    // =====================================================
+
+    const handleEdit = (
+        event,
+        product
+    ) => {
+
+        // Prevent product details navigation
+
+        event.stopPropagation();
+
+
+        // Extra admin protection
+
+        if (!isAdmin) {
+
+            return;
+
+        }
+
+
+        console.log(
+            "Editing product:",
+            product
+        );
+
+
+        // Save product
+
+        localStorage.setItem(
+            "editingProduct",
+            JSON.stringify(product)
+        );
+
+
+        // Go to Admin page
+
+        navigate("/admin");
+
+    };
+
+
+    // =====================================================
+    // PRODUCT IMAGE
+    // =====================================================
+
+    const getProductImage = (
+        image
+    ) => {
+
+        // No image
+
+        if (!image) {
+
+            return "/placeholder.png";
+
+        }
+
+
+        // Array
+
+        if (
+            Array.isArray(image)
+        ) {
+
+            const firstImage =
+                image.find(
+                    item =>
+                        typeof item === "string" &&
+                        item.trim() !== ""
+                );
+
+
+            return firstImage ||
+                "/placeholder.png";
+
+        }
+
+
+        // String
+
+        if (
+            typeof image === "string"
+        ) {
+
+            const trimmed =
+                image.trim();
+
+
+            if (!trimmed) {
+
+                return "/placeholder.png";
+
+            }
+
+
+            // Try JSON array
+
+            try {
+
+                const parsed =
+                    JSON.parse(
+                        trimmed
+                    );
+
+
+                if (
+                    Array.isArray(parsed)
+                ) {
+
+                    const firstImage =
+                        parsed.find(
+                            item =>
+                                typeof item === "string" &&
+                                item.trim() !== ""
+                        );
+
+
+                    if (firstImage) {
+
+                        return firstImage;
+
+                    }
+
+                }
+
+            } catch (error) {
+
+                // Normal image URL
+
+            }
+
+
+            // Comma separated
+
+            if (
+                trimmed.includes(",")
+            ) {
+
+                const firstImage =
+                    trimmed
+                        .split(",")
+                        .map(
+                            item =>
+                                item.trim()
+                        )
+                        .find(Boolean);
+
+
+                return firstImage ||
+                    "/placeholder.png";
+
+            }
+
+
+            return trimmed;
+
+        }
+
+
+        return "/placeholder.png";
+
+    };
+
+
+    // =====================================================
+    // LOADING
+    // =====================================================
+
+    if (loading) {
+
+        return (
+
+            <div
+                className="subcategory-page"
+            >
+
+                <div
+                    className="subcategory-header"
+                >
+
+                    <button
+                        className="back-button"
+                        onClick={() =>
+                            navigate(-1)
+                        }
+                    >
+
+                        ← Back
+
+                    </button>
+
+
+                    <h1>
+                        {name}
+                    </h1>
+
+                </div>
+
+
+                <p className="no-products">
+
+                    Loading products...
+
+                </p>
+
+            </div>
+
+        );
+
+    }
+
+
+    // =====================================================
+    // PAGE
+    // =====================================================
 
     return (
 
-        <div className="subcategory-page">
+        <div
+            className="subcategory-page"
+        >
 
-            {/* =========================
+            {/* =================================================
                 HEADER
-            ========================= */}
+            ================================================= */}
 
-            <div className="subcategory-header">
+            <div
+                className="subcategory-header"
+            >
 
                 <button
                     className="back-button"
-                    onClick={() => navigate(-1)}
+
+                    onClick={() =>
+                        navigate(-1)
+                    }
                 >
+
                     ← Back
+
                 </button>
 
+
                 <h1>
+
                     {name}
-                    <span> ({products.length})</span>
+
+                    <span>
+                        {" "}
+                        ({subcategoryProducts.length})
+                    </span>
+
                 </h1>
 
             </div>
 
 
-            {/* =========================
+            {/* =================================================
                 PRODUCTS
-            ========================= */}
+            ================================================= */}
 
-            {products.length === 0 ? (
+            {subcategoryProducts.length === 0 ? (
 
-                <p className="no-products">
+                <p
+                    className="no-products"
+                >
+
                     No products found.
+
                 </p>
 
             ) : (
 
-                <div className="subcategory-product-grid">
+                <div
+                    className="subcategory-product-grid"
+                >
 
-                    {products.map((product) => {
+                    {subcategoryProducts.map(
+                        product => {
 
-                        const discount =
-                            product.offerprice && product.price
-                                ? Math.round(
-                                    (
-                                        (product.price - product.offerprice) /
-                                        product.price
-                                    ) * 100
-                                )
-                                : 0;
+                            // =================================================
+                            // PRICE
+                            // =================================================
+
+                            const price =
+                                Number(
+                                    product.price
+                                ) || 0;
 
 
-                        return (
+                            const offerprice =
+                                Number(
+                                    product.offerprice
+                                ) || 0;
 
-                            <div
-                                className="subcategory-card"
-                                key={product.id}
 
-                                onClick={() =>
-                                    navigate(`/product/${product.id}`)
-                                }
+                            // =================================================
+                            // DISCOUNT
+                            // =================================================
 
-                                role="button"
-                                tabIndex={0}
+                            const discount =
+                                price > 0 &&
+                                offerprice > 0
 
-                                onKeyDown={(e) => {
+                                    ? Math.round(
+                                        (
+                                            (
+                                                price -
+                                                offerprice
+                                            ) /
+                                            price
+                                        ) * 100
+                                    )
 
-                                    if (
-                                        e.key === "Enter" ||
-                                        e.key === " "
-                                    ) {
+                                    : 0;
 
-                                        navigate(
-                                            `/product/${product.id}`
-                                        );
 
+                            return (
+
+                                <div
+                                    className="subcategory-card"
+
+                                    key={
+                                        product.id
                                     }
 
-                                }}
-                            >
+                                    onClick={() =>
+                                        navigate(
+                                            `/product/${product.id}`
+                                        )
+                                    }
 
-                                {/* PRODUCT IMAGE */}
+                                    role="button"
 
-                                <img
-                                    src={product.image?.[0]}
-                                    alt={product.name}
-                                />
+                                    tabIndex={0}
+
+                                    onKeyDown={(event) => {
+
+                                        if (
+                                            event.key ===
+                                            "Enter" ||
+                                            event.key ===
+                                            " "
+                                        ) {
+
+                                            event.preventDefault();
 
 
-                                {/* PRODUCT NAME */}
+                                            navigate(
+                                                `/product/${product.id}`
+                                            );
 
-                                <h3>
-                                    {product.name}
-                                </h3>
+                                        }
+
+                                    }}
+                                >
+
+                                    {/* =================================================
+                                        IMAGE
+                                    ================================================= */}
+
+                                    <div
+                                        className="subcategory-image-wrapper"
+                                    >
+
+                                        <img
+
+                                            src={
+                                                getProductImage(
+                                                    product.image
+                                                )
+                                            }
+
+                                            alt={
+                                                product.name ||
+                                                "Product"
+                                            }
+
+                                            onError={(
+                                                event
+                                            ) => {
+
+                                                event.currentTarget.src =
+                                                    "/placeholder.png";
+
+                                            }}
+
+                                        />
+
+                                    </div>
 
 
-                                {/* PRICE */}
+                                    {/* =================================================
+                                        PRODUCT NAME
+                                    ================================================= */}
 
-                                <div className="product-price">
+                                    <h3>
 
-                                    {product.offerprice ? (
+                                        {
+                                            product.name
+                                        }
 
-                                        <>
-                                            <span className="offer-price">
-                                                ₹{product.offerprice}
-                                            </span>
+                                    </h3>
 
-                                            <span className="original-price">
-                                                ₹{product.price}
-                                            </span>
 
-                                            {discount > 0 && (
+                                    {/* =================================================
+                                        PRICE
+                                    ================================================= */}
 
-                                                <span className="discount">
-                                                    {discount}% OFF
+                                    <div
+                                        className="product-price"
+                                    >
+
+                                        {offerprice > 0 ? (
+
+                                            <>
+
+                                                {/* OFFER PRICE */}
+
+                                                <span
+                                                    className="offer-price"
+                                                >
+
+                                                    ₹
+                                                    {
+                                                        offerprice
+                                                    }
+
                                                 </span>
 
-                                            )}
-                                        </>
 
-                                    ) : (
+                                                {/* ORIGINAL PRICE */}
 
-                                        <span className="offer-price">
-                                            ₹{product.price}
-                                        </span>
+                                                {price > 0 && (
+
+                                                    <span
+                                                        className="original-price"
+                                                    >
+
+                                                        ₹
+                                                        {
+                                                            price
+                                                        }
+
+                                                    </span>
+
+                                                )}
+
+
+                                                {/* DISCOUNT */}
+
+                                                {discount > 0 && (
+
+                                                    <span
+                                                        className="discount"
+                                                    >
+
+                                                        {
+                                                            discount
+                                                        }% OFF
+
+                                                    </span>
+
+                                                )}
+
+                                            </>
+
+                                        ) : (
+
+                                            <span
+                                                className="offer-price"
+                                            >
+
+                                                ₹
+                                                {
+                                                    price
+                                                }
+
+                                            </span>
+
+                                        )}
+
+                                    </div>
+
+
+                                    {/* =================================================
+                                        ADMIN ACTIONS
+                                    ================================================= */}
+
+                                    {isAdmin && (
+
+                                        <div
+                                            className="subcategory-admin-actions"
+
+                                            onClick={(
+                                                event
+                                            ) =>
+                                                event.stopPropagation()
+                                            }
+                                        >
+
+                                            {/* EDIT */}
+
+                                            <button
+                                                type="button"
+
+                                                className="subcategory-edit-btn"
+
+                                                onClick={(
+                                                    event
+                                                ) =>
+                                                    handleEdit(
+                                                        event,
+                                                        product
+                                                    )
+                                                }
+                                            >
+
+                                                <i className="bi bi-pencil"></i>
+
+                                                Edit
+
+                                            </button>
+
+
+                                            {/* DELETE */}
+
+                                            <button
+                                                type="button"
+
+                                                className="subcategory-delete-btn"
+
+                                                onClick={(
+                                                    event
+                                                ) =>
+                                                    handleDelete(
+                                                        event,
+                                                        product
+                                                    )
+                                                }
+                                            >
+
+                                                <i className="bi bi-trash"></i>
+
+                                                Delete
+
+                                            </button>
+
+                                        </div>
 
                                     )}
 
                                 </div>
 
-                            </div>
+                            );
 
-                        );
-
-                    })}
+                        }
+                    )}
 
                 </div>
 
             )}
 
         </div>
+
     );
+
 }

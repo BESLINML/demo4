@@ -1,231 +1,403 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import Category from "./Category";
-import Allproducts from "../Products/Allproducts";
+import { getProducts } from "../api/productApi";
+
 
 export default function Header() {
-
-    const [search, setSearch] = useState("");
-    const [showResults, setShowResults] = useState(false);
-
-    // Location popup
-    const [showLocation, setShowLocation] = useState(false);
-
-    const [location, setLocation] = useState({
-        name: "",
-        phone: "",
-        address: "",
-        city: "",
-        state: "",
-        pincode: ""
-    });
 
     const navigate = useNavigate();
 
 
     // =========================================================
-    // MANUAL CATEGORIES + SUBCATEGORIES
+    // PRODUCTS FROM SPRING BOOT
     // =========================================================
 
-    const manualSubCategories = {
-
-        "Main Categories": [
-            "Customized Gifts",
-            "Readymade Gifts",
-            "Premium Gifts",
-            "Budget Gifts"
-        ],
-
-        "Occasion-Based Categories": [
-            "Birthday Gifts",
-            "Wedding & Anniversary Gifts",
-            "Festival Gifts",
-            "Love & Romantic Gifts",
-            "Friendship Gifts"
-        ],
-
-        "Recipient-Based Categories": [
-            "Gifts for Him",
-            "Gifts for Her",
-            "Gifts for Kids",
-            "Gifts for Parents",
-            "Gifts for Friends"
-        ],
-
-        "Product-Based Categories": [
-            "Photo Frames",
-            "Wall Hangings",
-            "MDF Gifts",
-            "Metal Engraving",
-            "Pillow Printing",
-            "Cup Printing",
-            "Keychains",
-            "Return Gifts",
-            "3D Printing",
-            "Laser Cutting",
-            "Home Decor",
-            "Toys"
-        ],
-
-        "Special Categories": [
-            "Corporate Gifts",
-            "Bulk Orders",
-            "Handmade Gifts",
-            "Trending Gifts"
-        ],
-
-        "Premium Sections": [
-            "Best Sellers",
-            "New Arrivals",
-            "Limited Edition",
-            "Personalized Combos"
-        ]
-
-    };
-
-
-    // =========================================================
-    // GET PRODUCT CATEGORIES
-    // =========================================================
-
-    const productCategories = [
-        ...new Set(
-            Allproducts
-                .map(product => product.category)
-                .filter(Boolean)
-        )
-    ];
-
-
-    // =========================================================
-    // ALL MAIN CATEGORIES
-    // =========================================================
-
-    const allCategories = [
-        ...new Set([
-            ...productCategories,
-            ...Object.keys(manualSubCategories)
-        ])
-    ];
-
-
-    // =========================================================
-    // ALL SUBCATEGORIES
-    // =========================================================
-
-    const productSubcategories = [
-        ...new Set(
-            Allproducts
-                .map(product => product.subcategory)
-                .filter(Boolean)
-        )
-    ];
-
-
-    const manualSubcategories = [
-        ...Object.values(manualSubCategories).flat()
-    ];
-
-
-    const allSubcategories = [
-        ...new Set([
-            ...productSubcategories,
-            ...manualSubcategories
-        ])
-    ];
+    const [products, setProducts] = useState([]);
 
 
     // =========================================================
     // SEARCH
     // =========================================================
 
-    const searchText = search.trim().toLowerCase();
+    const [search, setSearch] = useState("");
+
+    const [showResults, setShowResults] =
+        useState(false);
 
 
-    // ---------------------------------------------------------
+    // =========================================================
+    // LOCATION
+    // =========================================================
+
+    const [showLocation, setShowLocation] =
+        useState(false);
+
+
+    const [location, setLocation] = useState({
+
+        name: "",
+        phone: "",
+        address: "",
+        city: "",
+        state: "",
+        pincode: ""
+
+    });
+
+
+    // =========================================================
+    // LOAD PRODUCTS FROM MYSQL
+    // =========================================================
+
+    useEffect(() => {
+
+        loadProducts();
+
+    }, []);
+
+
+    const loadProducts = async () => {
+
+        try {
+
+            const data = await getProducts();
+
+            console.log(
+                "Header products:",
+                data
+            );
+
+            setProducts(
+                Array.isArray(data)
+                    ? data
+                    : []
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Error loading products in Header:",
+                error
+            );
+
+        }
+
+    };
+
+
+    // =========================================================
+    // GET LOGGED-IN USER
+    // =========================================================
+
+    const getLoggedUser = () => {
+
+        try {
+
+            const savedUser =
+                localStorage.getItem("user");
+
+
+            if (!savedUser) {
+                return null;
+            }
+
+
+            return JSON.parse(
+                savedUser
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Invalid user data:",
+                error
+            );
+
+            return null;
+
+        }
+
+    };
+
+
+    const user = getLoggedUser();
+
+
+    // =========================================================
+    // CHECK ADMIN
+    // =========================================================
+
+    const isAdmin =
+        user?.role === "ADMIN";
+
+
+    // =========================================================
+    // GET UNIQUE CATEGORIES FROM MYSQL
+    // =========================================================
+
+    const allCategories = [
+
+        ...new Set(
+
+            products
+
+                .map(
+                    product =>
+                        product.category
+                )
+
+                .filter(
+                    category =>
+                        category &&
+                        category.trim() !== ""
+                )
+
+        )
+
+    ];
+
+
+    // =========================================================
+    // GET UNIQUE SUBCATEGORIES FROM MYSQL
+    // =========================================================
+
+    const allSubcategories = [
+
+        ...new Set(
+
+            products
+
+                .map(
+                    product =>
+                        product.subcategory
+                )
+
+                .filter(
+                    subcategory =>
+                        subcategory &&
+                        subcategory.trim() !== ""
+                )
+
+        )
+
+    ];
+
+
+    // =========================================================
+    // SEARCH TEXT
+    // =========================================================
+
+    const searchText =
+        search.trim().toLowerCase();
+
+
+    // =========================================================
     // CATEGORY SEARCH
-    // ---------------------------------------------------------
+    // =========================================================
 
     const categoryResults = searchText
+
         ? allCategories
+
             .filter(category =>
+
                 category
                     .toLowerCase()
                     .includes(searchText)
+
             )
+
             .map(category => ({
+
                 type: "category",
+
                 name: category
+
             }))
+
         : [];
 
 
-    // ---------------------------------------------------------
+    // =========================================================
     // SUBCATEGORY SEARCH
-    // ---------------------------------------------------------
+    // =========================================================
 
     const subcategoryResults = searchText
+
         ? allSubcategories
+
             .filter(subcategory =>
+
                 subcategory
                     .toLowerCase()
                     .includes(searchText)
+
             )
+
             .map(subcategory => ({
+
                 type: "subcategory",
+
                 name: subcategory
+
             }))
+
         : [];
 
 
-    // ---------------------------------------------------------
+    // =========================================================
     // PRODUCT SEARCH
-    // ---------------------------------------------------------
+    // =========================================================
 
     const productResults = searchText
-        ? Allproducts
+
+        ? products
+
             .filter(product => {
 
                 const name =
                     product.name?.toLowerCase() || "";
 
+
                 const productname =
                     product.productname?.toLowerCase() || "";
+
 
                 const category =
                     product.category?.toLowerCase() || "";
 
+
                 const subcategory =
                     product.subcategory?.toLowerCase() || "";
 
+
                 return (
+
                     name.includes(searchText) ||
+
                     productname.includes(searchText) ||
+
                     category.includes(searchText) ||
+
                     subcategory.includes(searchText)
+
                 );
 
             })
+
             .map(product => ({
+
                 type: "product",
+
                 name:
                     product.name ||
-                    product.productname,
+                    product.productname ||
+                    "Product",
 
-                price: product.price,
+                price:
+                    product.offerprice ??
+                    product.price,
 
                 image:
-                    product.image?.[0] ||
-                    product.photo?.[0],
+                    getProductImage(product),
 
-                data: product
+                data:
+                    product
+
             }))
+
         : [];
 
 
     // =========================================================
-    // COMBINE RESULTS
+    // GET PRODUCT IMAGE
+    // =========================================================
+
+    function getProductImage(product) {
+
+        if (!product) {
+            return "/placeholder.png";
+        }
+
+
+        // Array
+
+        if (Array.isArray(product.image)) {
+
+            return (
+                product.image[0] ||
+                "/placeholder.png"
+            );
+
+        }
+
+
+        // JSON string array
+
+        if (
+            typeof product.image === "string"
+        ) {
+
+            try {
+
+                const parsed =
+                    JSON.parse(
+                        product.image
+                    );
+
+
+                if (
+                    Array.isArray(parsed)
+                ) {
+
+                    return (
+                        parsed[0] ||
+                        "/placeholder.png"
+                    );
+
+                }
+
+            } catch {
+
+                // Normal URL string
+
+            }
+
+
+            if (
+                product.image.trim() !== ""
+            ) {
+
+                return product.image;
+
+            }
+
+        }
+
+
+        // photo array fallback
+
+        if (
+            Array.isArray(product.photo)
+        ) {
+
+            return (
+                product.photo[0] ||
+                "/placeholder.png"
+            );
+
+        }
+
+
+        return "/placeholder.png";
+
+    }
+
+
+    // =========================================================
+    // COMBINE SEARCH RESULTS
     // =========================================================
 
     const searchResults = [
@@ -243,13 +415,19 @@ export default function Header() {
     // CATEGORY CLICK
     // =========================================================
 
-    const handleCategoryClick = (category) => {
+    const handleCategoryClick = (
+        category
+    ) => {
 
         setSearch("");
+
         setShowResults(false);
 
+
         navigate(
-            `/category/${encodeURIComponent(category)}`
+            `/category/${encodeURIComponent(
+                category
+            )}`
         );
 
     };
@@ -259,13 +437,19 @@ export default function Header() {
     // SUBCATEGORY CLICK
     // =========================================================
 
-    const handleSubcategoryClick = (subcategory) => {
+    const handleSubcategoryClick = (
+        subcategory
+    ) => {
 
         setSearch("");
+
         setShowResults(false);
 
+
         navigate(
-            `/category/${encodeURIComponent(subcategory)}`
+            `/category/${encodeURIComponent(
+                subcategory
+            )}`
         );
 
     };
@@ -275,10 +459,14 @@ export default function Header() {
     // PRODUCT CLICK
     // =========================================================
 
-    const handleProductClick = (product) => {
+    const handleProductClick = (
+        product
+    ) => {
 
         setSearch("");
+
         setShowResults(false);
+
 
         navigate(
             `/product/${product.id}`
@@ -288,16 +476,23 @@ export default function Header() {
 
 
     // =========================================================
-    // SEARCH INPUT
+    // SEARCH CHANGE
     // =========================================================
 
-    const handleSearchChange = (e) => {
+    const handleSearchChange = (
+        event
+    ) => {
 
-        const value = e.target.value;
+        const value =
+            event.target.value;
+
 
         setSearch(value);
 
-        if (value.trim() !== "") {
+
+        if (
+            value.trim() !== ""
+        ) {
 
             setShowResults(true);
 
@@ -311,15 +506,28 @@ export default function Header() {
 
 
     // =========================================================
-    // LOCATION INPUT
+    // LOCATION CHANGE
     // =========================================================
 
-    const handleLocationChange = (e) => {
+    const handleLocationChange = (
+        event
+    ) => {
 
-        setLocation({
-            ...location,
-            [e.target.name]: e.target.value
-        });
+        const {
+            name,
+            value
+        } = event.target;
+
+
+        setLocation(
+            previous => ({
+
+                ...previous,
+
+                [name]: value
+
+            })
+        );
 
     };
 
@@ -328,16 +536,60 @@ export default function Header() {
     // SAVE LOCATION
     // =========================================================
 
-    const handleLocationSubmit = (e) => {
+    const handleLocationSubmit = (
+        event
+    ) => {
 
-        e.preventDefault();
+        event.preventDefault();
+
 
         localStorage.setItem(
+
             "deliveryLocation",
-            JSON.stringify(location)
+
+            JSON.stringify(
+                location
+            )
+
         );
 
+
         setShowLocation(false);
+
+    };
+
+
+    // =========================================================
+    // LOGOUT
+    // =========================================================
+
+    const handleLogout = () => {
+
+        localStorage.removeItem(
+            "user"
+        );
+
+
+        navigate("/login");
+
+
+        window.location.reload();
+
+    };
+
+
+    // =========================================================
+    // ADMIN PANEL
+    // =========================================================
+
+    const handleAdminPanel = () => {
+
+        if (!isAdmin) {
+            return;
+        }
+
+
+        navigate("/admin");
 
     };
 
@@ -366,7 +618,11 @@ export default function Header() {
                     className="logo"
                 >
 
-                    <span>YAZHL</span> Crafts
+                    <span>
+                        YAZHL
+                    </span>
+
+                    {" "}Crafts
 
                 </Link>
 
@@ -378,30 +634,51 @@ export default function Header() {
                 <div className="search-box">
 
                     <input
+
                         type="text"
+
                         value={search}
+
                         placeholder="Search products, categories..."
-                        onChange={handleSearchChange}
+
+                        onChange={
+                            handleSearchChange
+                        }
 
                         onFocus={() => {
 
-                            if (search.trim() !== "") {
-                                setShowResults(true);
+                            if (
+                                search.trim() !== ""
+                            ) {
+
+                                setShowResults(
+                                    true
+                                );
+
                             }
 
                         }}
+
                     />
 
 
                     <button
                         type="button"
+
                         onClick={() => {
 
-                            if (search.trim() !== "") {
-                                setShowResults(true);
+                            if (
+                                search.trim() !== ""
+                            ) {
+
+                                setShowResults(
+                                    true
+                                );
+
                             }
 
                         }}
+
                     >
 
                         <i className="bi bi-search"></i>
@@ -416,44 +693,52 @@ export default function Header() {
                     {showResults &&
                         search.trim() !== "" && (
 
-                            <div className="search-results">
+                        <div className="search-results">
 
 
-                                {searchResults.length > 0 ? (
+                            {searchResults.length > 0 ? (
 
-                                    <>
-
-
-                                        {/* =================================================
-                                            CATEGORY RESULTS
-                                        ================================================= */}
-
-                                        {categoryResults.length > 0 && (
-
-                                            <>
-
-                                                <div className="search-result-heading">
-
-                                                    <span>
-                                                        Categories
-                                                    </span>
-
-                                                </div>
+                                <>
 
 
-                                                {categoryResults
-                                                    .slice(0, 4)
-                                                    .map((result) => (
+                                    {/* =================================================
+                                        CATEGORIES
+                                    ================================================= */}
+
+                                    {categoryResults.length > 0 && (
+
+                                        <>
+
+                                            <div className="search-result-heading">
+
+                                                <span>
+                                                    Categories
+                                                </span>
+
+                                            </div>
+
+
+                                            {categoryResults
+
+                                                .slice(0, 4)
+
+                                                .map(
+                                                    result => (
 
                                                         <div
+
                                                             className="search-result-item search-category-item"
-                                                            key={`category-${result.name}`}
+
+                                                            key={
+                                                                `category-${result.name}`
+                                                            }
 
                                                             onClick={() =>
                                                                 handleCategoryClick(
                                                                     result.name
                                                                 )
                                                             }
+
                                                         >
 
                                                             <div className="search-category-icon">
@@ -469,6 +754,7 @@ export default function Header() {
                                                                     {result.name}
                                                                 </h4>
 
+
                                                                 <p>
                                                                     Category
                                                                 </p>
@@ -480,44 +766,53 @@ export default function Header() {
 
                                                         </div>
 
-                                                    ))
-                                                }
+                                                    )
+                                                )
+                                            }
 
-                                            </>
+                                        </>
 
-                                        )}
-
-
-                                        {/* =================================================
-                                            SUBCATEGORY RESULTS
-                                        ================================================= */}
-
-                                        {subcategoryResults.length > 0 && (
-
-                                            <>
-
-                                                <div className="search-result-heading">
-
-                                                    <span>
-                                                        Subcategories
-                                                    </span>
-
-                                                </div>
+                                    )}
 
 
-                                                {subcategoryResults
-                                                    .slice(0, 5)
-                                                    .map((result) => (
+                                    {/* =================================================
+                                        SUBCATEGORIES
+                                    ================================================= */}
+
+                                    {subcategoryResults.length > 0 && (
+
+                                        <>
+
+                                            <div className="search-result-heading">
+
+                                                <span>
+                                                    Subcategories
+                                                </span>
+
+                                            </div>
+
+
+                                            {subcategoryResults
+
+                                                .slice(0, 5)
+
+                                                .map(
+                                                    result => (
 
                                                         <div
+
                                                             className="search-result-item search-category-item"
-                                                            key={`subcategory-${result.name}`}
+
+                                                            key={
+                                                                `subcategory-${result.name}`
+                                                            }
 
                                                             onClick={() =>
                                                                 handleSubcategoryClick(
                                                                     result.name
                                                                 )
                                                             }
+
                                                         >
 
                                                             <div className="search-category-icon">
@@ -533,6 +828,7 @@ export default function Header() {
                                                                     {result.name}
                                                                 </h4>
 
+
                                                                 <p>
                                                                     Subcategory
                                                                 </p>
@@ -544,50 +840,65 @@ export default function Header() {
 
                                                         </div>
 
-                                                    ))
-                                                }
+                                                    )
+                                                )
+                                            }
 
-                                            </>
+                                        </>
 
-                                        )}
-
-
-                                        {/* =================================================
-                                            PRODUCT RESULTS
-                                        ================================================= */}
-
-                                        {productResults.length > 0 && (
-
-                                            <>
-
-                                                <div className="search-result-heading">
-
-                                                    <span>
-                                                        Products
-                                                    </span>
-
-                                                </div>
+                                    )}
 
 
-                                                {productResults
-                                                    .slice(0, 6)
-                                                    .map((result) => (
+                                    {/* =================================================
+                                        PRODUCTS
+                                    ================================================= */}
+
+                                    {productResults.length > 0 && (
+
+                                        <>
+
+                                            <div className="search-result-heading">
+
+                                                <span>
+                                                    Products
+                                                </span>
+
+                                            </div>
+
+
+                                            {productResults
+
+                                                .slice(0, 6)
+
+                                                .map(
+                                                    result => (
 
                                                         <div
+
                                                             className="search-result-item"
 
-                                                            key={`product-${result.data.id}`}
+                                                            key={
+                                                                `product-${result.data.id}`
+                                                            }
 
                                                             onClick={() =>
                                                                 handleProductClick(
                                                                     result.data
                                                                 )
                                                             }
+
                                                         >
 
                                                             <img
-                                                                src={result.image}
-                                                                alt={result.name}
+
+                                                                src={
+                                                                    result.image
+                                                                }
+
+                                                                alt={
+                                                                    result.name
+                                                                }
+
                                                             />
 
 
@@ -597,45 +908,50 @@ export default function Header() {
                                                                     {result.name}
                                                                 </h4>
 
+
                                                                 <p>
+
                                                                     ₹
+
                                                                     {Number(
                                                                         result.price
                                                                     ).toLocaleString(
                                                                         "en-IN"
                                                                     )}
+
                                                                 </p>
 
                                                             </div>
 
                                                         </div>
 
-                                                    ))
-                                                }
+                                                    )
+                                                )
+                                            }
 
-                                            </>
+                                        </>
 
-                                        )}
+                                    )}
 
-                                    </>
+                                </>
 
-                                ) : (
+                            ) : (
 
-                                    <div className="no-results">
+                                <div className="no-results">
 
-                                        <i className="bi bi-search"></i>
+                                    <i className="bi bi-search"></i>
 
-                                        <span>
-                                            No products or categories found
-                                        </span>
+                                    <span>
+                                        No products or categories found
+                                    </span>
 
-                                    </div>
+                                </div>
 
-                                )}
+                            )}
 
-                            </div>
+                        </div>
 
-                        )}
+                    )}
 
                 </div>
 
@@ -652,14 +968,17 @@ export default function Header() {
                     ================================================= */}
 
                     <button
+
                         className="action"
 
                         onClick={() =>
                             setShowLocation(true)
                         }
+
                     >
 
                         <i className="bi bi-geo-alt"></i>
+
 
                         <div>
 
@@ -667,8 +986,12 @@ export default function Header() {
                                 Deliver to
                             </small>
 
+
                             <span>
-                                {location.city || "Location"}
+
+                                {location.city ||
+                                    "Location"}
+
                             </span>
 
                         </div>
@@ -681,17 +1004,22 @@ export default function Header() {
                     ================================================= */}
 
                     <Link
+
                         to="/cart"
+
                         className="action"
+
                     >
 
                         <i className="bi bi-cart3"></i>
+
 
                         <div>
 
                             <small>
                                 My
                             </small>
+
 
                             <span>
                                 Cart
@@ -703,29 +1031,114 @@ export default function Header() {
 
 
                     {/* =================================================
-                        LOGIN
+                        ADMIN PANEL
                     ================================================= */}
 
-                    <Link
-                        to="/login"
-                        className="action"
-                    >
+                    {isAdmin && (
 
-                        <i className="bi bi-person-circle"></i>
+                        <button
 
-                        <div>
+                            type="button"
 
-                            <small>
-                                Hii
-                            </small>
+                            className="action admin-header-button"
 
-                            <span>
-                                Login
-                            </span>
+                            onClick={
+                                handleAdminPanel
+                            }
 
-                        </div>
+                        >
 
-                    </Link>
+                            <i className="bi bi-speedometer2"></i>
+
+
+                            <div>
+
+                                <small>
+                                    Admin
+                                </small>
+
+
+                                <span>
+                                    Panel
+                                </span>
+
+                            </div>
+
+                        </button>
+
+                    )}
+
+
+                    {/* =================================================
+                        LOGIN / LOGOUT
+                    ================================================= */}
+
+                    {user ? (
+
+                        <button
+
+                            type="button"
+
+                            className="action"
+
+                            onClick={
+                                handleLogout
+                            }
+
+                        >
+
+                            <i className="bi bi-box-arrow-right"></i>
+
+
+                            <div>
+
+                                <small>
+
+                                    Hi{" "}
+
+                                    {user.name ||
+                                        "User"}
+
+                                </small>
+
+
+                                <span>
+                                    Logout
+                                </span>
+
+                            </div>
+
+                        </button>
+
+                    ) : (
+
+                        <Link
+
+                            to="/login"
+
+                            className="action"
+
+                        >
+
+                            <i className="bi bi-person-circle"></i>
+
+
+                            <div>
+
+                                <small>
+                                    Hii
+                                </small>
+
+
+                                <span>
+                                    Login
+                                </span>
+
+                            </div>
+
+                        </Link>
+
+                    )}
 
                 </div>
 
@@ -733,7 +1146,7 @@ export default function Header() {
 
 
             {/* =================================================
-                CATEGORY
+                EXISTING CATEGORY
             ================================================= */}
 
             <Category />
@@ -746,19 +1159,24 @@ export default function Header() {
             {showLocation && (
 
                 <div
+
                     className="location-overlay"
 
                     onClick={() =>
                         setShowLocation(false)
                     }
+
                 >
 
                     <div
+
                         className="location-popup"
 
-                        onClick={(e) =>
-                            e.stopPropagation()
+                        onClick={
+                            event =>
+                                event.stopPropagation()
                         }
+
                     >
 
 
@@ -774,6 +1192,7 @@ export default function Header() {
                                     Delivery Location
                                 </h2>
 
+
                                 <p>
                                     Enter your delivery address
                                 </p>
@@ -782,11 +1201,17 @@ export default function Header() {
 
 
                             <button
+
+                                type="button"
+
                                 className="location-close"
 
                                 onClick={() =>
-                                    setShowLocation(false)
+                                    setShowLocation(
+                                        false
+                                    )
                                 }
+
                             >
 
                                 ×
@@ -801,9 +1226,11 @@ export default function Header() {
                         ================================================= */}
 
                         <form
+
                             onSubmit={
                                 handleLocationSubmit
                             }
+
                         >
 
 
@@ -818,9 +1245,13 @@ export default function Header() {
                                         Name
                                     </label>
 
+
                                     <input
+
                                         type="text"
+
                                         name="name"
+
                                         placeholder="Enter your name"
 
                                         value={
@@ -832,6 +1263,7 @@ export default function Header() {
                                         }
 
                                         required
+
                                     />
 
                                 </div>
@@ -843,9 +1275,13 @@ export default function Header() {
                                         Phone Number
                                     </label>
 
+
                                     <input
+
                                         type="tel"
+
                                         name="phone"
+
                                         placeholder="Enter phone number"
 
                                         value={
@@ -857,6 +1293,7 @@ export default function Header() {
                                         }
 
                                         required
+
                                     />
 
                                 </div>
@@ -872,8 +1309,11 @@ export default function Header() {
                                     Address
                                 </label>
 
+
                                 <textarea
+
                                     name="address"
+
                                     placeholder="House / Street / Area"
 
                                     value={
@@ -885,6 +1325,7 @@ export default function Header() {
                                     }
 
                                     required
+
                                 />
 
                             </div>
@@ -901,9 +1342,13 @@ export default function Header() {
                                         City
                                     </label>
 
+
                                     <input
+
                                         type="text"
+
                                         name="city"
+
                                         placeholder="City"
 
                                         value={
@@ -915,6 +1360,7 @@ export default function Header() {
                                         }
 
                                         required
+
                                     />
 
                                 </div>
@@ -926,9 +1372,13 @@ export default function Header() {
                                         State
                                     </label>
 
+
                                     <input
+
                                         type="text"
+
                                         name="state"
+
                                         placeholder="State"
 
                                         value={
@@ -940,6 +1390,7 @@ export default function Header() {
                                         }
 
                                         required
+
                                     />
 
                                 </div>
@@ -955,9 +1406,13 @@ export default function Header() {
                                     Pincode
                                 </label>
 
+
                                 <input
+
                                     type="text"
+
                                     name="pincode"
+
                                     placeholder="Enter pincode"
 
                                     value={
@@ -971,6 +1426,7 @@ export default function Header() {
                                     maxLength="6"
 
                                     required
+
                                 />
 
                             </div>
@@ -979,8 +1435,11 @@ export default function Header() {
                             {/* SAVE */}
 
                             <button
+
                                 type="submit"
+
                                 className="save-location-btn"
+
                             >
 
                                 Save Delivery Location

@@ -1,4 +1,4 @@
-
+/* 
 const Allproducts=[
     {
         id:'cg001',
@@ -698,4 +698,4 @@ const Allproducts=[
 
 ]
 
-export default Allproducts;
+export default Allproducts; */

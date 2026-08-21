@@ -1,140 +1,206 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import Allproducts from "../Products/Allproducts";
+import { getProducts } from "../api/productApi";
 
 export default function Category() {
 
     const navigate = useNavigate();
 
     // =========================================================
+    // PRODUCTS FROM SPRING BOOT / MYSQL
+    // =========================================================
+
+    const [products, setProducts] = useState([]);
+
+    const [loading, setLoading] = useState(true);
+
+
+    // =========================================================
     // DESKTOP STATE
     // =========================================================
 
     const [activeCategory, setActiveCategory] = useState(null);
-    const [selectedSubcategory, setSelectedSubcategory] = useState(null);
+
+    const [selectedSubcategory, setSelectedSubcategory] =
+        useState(null);
+
 
     // =========================================================
     // MOBILE STATE
     // =========================================================
 
-    const [mobileCategoryOpen, setMobileCategoryOpen] = useState(false);
-    const [mobileActiveCategory, setMobileActiveCategory] = useState(null);
+    const [mobileCategoryOpen, setMobileCategoryOpen] =
+        useState(false);
+
+    const [mobileActiveCategory, setMobileActiveCategory] =
+        useState(null);
+
 
     const categoryRef = useRef(null);
 
 
     // =========================================================
-    // MANUAL SUBCATEGORIES
+    // LOAD PRODUCTS
     // =========================================================
 
-    const manualSubCategories = {
+    useEffect(() => {
 
-        "Main Categories": [
-            "Customized Gifts",
-            "Readymade Gifts",
-            "Premium Gifts",
-            "Budget Gifts"
-        ],
+        const loadProducts = async () => {
 
-        "Occasion-Based Categories": [
-            "Birthday Gifts",
-            "Wedding & Anniversary Gifts",
-            "Festival Gifts",
-            "Love & Romantic Gifts",
-            "Friendship Gifts"
-        ],
+            try {
 
-        "Recipient-Based Categories": [
-            "Gifts for Him",
-            "Gifts for Her",
-            "Gifts for Kids",
-            "Gifts for Parents",
-            "Gifts for Friends"
-        ],
+                const data = await getProducts();
 
-        "Product-Based Categories": [
-            "Photo Frames",
-            "Wall Hangings",
-            "MDF Gifts",
-            "Metal Engraving",
-            "Pillow Printing",
-            "Cup Printing",
-            "Keychains",
-            "Return Gifts",
-            "3D Printing",
-            "Laser Cutting",
-            "Home Decor",
-            "Toys"
-        ],
+                console.log(
+                    "Products from Spring Boot:",
+                    data
+                );
 
-        "Special Categories": [
-            "Corporate Gifts",
-            "Bulk Orders",
-            "Handmade Gifts",
-            "Trending Gifts"
-        ],
+                setProducts(
+                    Array.isArray(data)
+                        ? data
+                        : []
+                );
 
-        "Premium Sections": [
-            "Best Sellers",
-            "New Arrivals",
-            "Limited Edition",
-            "Personalized Combos"
-        ]
+            } catch (error) {
 
-    };
+                console.error(
+                    "Error loading products:",
+                    error
+                );
+
+                setProducts([]);
+
+            } finally {
+
+                setLoading(false);
+
+            }
+
+        };
+
+
+        loadProducts();
+
+    }, []);
 
 
     // =========================================================
-    // PRODUCT CATEGORIES
+    // GET UNIQUE CATEGORIES
     // =========================================================
 
-    const productCategories = [
-        ...new Set(
-            Allproducts.map(product => product.category)
-        )
-    ];
+    const categories = [];
+
+    products.forEach(product => {
+
+        const category =
+            product.category?.trim();
+
+        if (!category) {
+            return;
+        }
 
 
-    const categories = [
-        ...new Set([
-            ...productCategories,
-            ...Object.keys(manualSubCategories)
-        ])
-    ];
+        // Case-insensitive duplicate check
+
+        const exists =
+            categories.some(
+                existing =>
+                    existing.toLowerCase() ===
+                    category.toLowerCase()
+            );
+
+
+        if (!exists) {
+
+            categories.push(category);
+
+        }
+
+    });
 
 
     // =========================================================
-    // GET SUBCATEGORIES
+    // GET SUBCATEGORIES FOR CATEGORY
     // =========================================================
 
     const getSubcategories = (category) => {
 
-        const productSubcategories = Allproducts
-            .filter(
-                product =>
-                    product.category === category
-            )
-            .map(product => product.subcategory)
-            .filter(Boolean);
+        const subcategories = [];
 
 
-        return [
-            ...new Set([
-                ...productSubcategories,
-                ...(manualSubCategories[category] || [])
-            ])
-        ];
+        products.forEach(product => {
+
+            const productCategory =
+                product.category
+                    ?.trim()
+                    .toLowerCase();
+
+
+            const currentCategory =
+                category
+                    ?.trim()
+                    .toLowerCase();
+
+
+            // Only products belonging
+            // to selected category
+
+            if (
+                productCategory !==
+                currentCategory
+            ) {
+
+                return;
+
+            }
+
+
+            const subcategory =
+                product.subcategory?.trim();
+
+
+            if (!subcategory) {
+                return;
+            }
+
+
+            // Case-insensitive duplicate check
+
+            const exists =
+                subcategories.some(
+                    existing =>
+                        existing.toLowerCase() ===
+                        subcategory.toLowerCase()
+                );
+
+
+            if (!exists) {
+
+                subcategories.push(
+                    subcategory
+                );
+
+            }
+
+        });
+
+
+        return subcategories;
+
     };
 
 
     // =========================================================
-    // CHECK WHETHER CATEGORY HAS SUBCATEGORIES
+    // CHECK CATEGORY HAS SUBCATEGORIES
     // =========================================================
 
     const hasSubcategories = (category) => {
 
-        return getSubcategories(category).length > 0;
+        return (
+            getSubcategories(category).length > 0
+        );
 
     };
 
@@ -145,14 +211,46 @@ export default function Category() {
 
     const handleCategoryClick = (category) => {
 
+        const subcategories =
+            getSubcategories(category);
+
+
+        // -----------------------------------------------------
+        // CATEGORY HAS NO SUBCATEGORY
+        // -----------------------------------------------------
+
+        if (subcategories.length === 0) {
+
+            navigate(
+                `/category/${encodeURIComponent(
+                    category
+                )}`
+            );
+
+
+            setActiveCategory(null);
+
+            setSelectedSubcategory(null);
+
+            return;
+
+        }
+
+
+        // -----------------------------------------------------
+        // OPEN / CLOSE SUBCATEGORY
+        // -----------------------------------------------------
+
         if (activeCategory === category) {
 
             setActiveCategory(null);
+
             setSelectedSubcategory(null);
 
         } else {
 
             setActiveCategory(category);
+
             setSelectedSubcategory(null);
 
         }
@@ -166,17 +264,50 @@ export default function Category() {
 
     const handleMobileCategoryClick = (category) => {
 
-        // If same category is clicked again
-        if (mobileActiveCategory === category) {
+        const subcategories =
+            getSubcategories(category);
+
+
+        // -----------------------------------------------------
+        // CATEGORY HAS NO SUBCATEGORY
+        // -----------------------------------------------------
+
+        if (subcategories.length === 0) {
+
+            navigate(
+                `/category/${encodeURIComponent(
+                    category
+                )}`
+            );
+
+
+            setMobileCategoryOpen(false);
 
             setMobileActiveCategory(null);
 
             return;
+
         }
 
 
-        // Open selected category immediately
-        setMobileActiveCategory(category);
+        // -----------------------------------------------------
+        // OPEN / CLOSE
+        // -----------------------------------------------------
+
+        if (
+            mobileActiveCategory ===
+            category
+        ) {
+
+            setMobileActiveCategory(null);
+
+        } else {
+
+            setMobileActiveCategory(
+                category
+            );
+
+        }
 
     };
 
@@ -187,21 +318,30 @@ export default function Category() {
 
     const handleSubcategoryClick = (subcategory) => {
 
-        setSelectedSubcategory(subcategory);
-
-        navigate(
-            `/category/${encodeURIComponent(subcategory)}`
+        setSelectedSubcategory(
+            subcategory
         );
 
 
-        // Close everything after navigation
-        setMobileCategoryOpen(false);
+        navigate(
+            `/category/${encodeURIComponent(
+                subcategory
+            )}`
+        );
 
-        setMobileActiveCategory(null);
+
+        // Close desktop menu
 
         setActiveCategory(null);
 
         setSelectedSubcategory(null);
+
+
+        // Close mobile menu
+
+        setMobileCategoryOpen(false);
+
+        setMobileActiveCategory(null);
 
     };
 
@@ -212,20 +352,26 @@ export default function Category() {
 
     const handleMobileCategoryToggle = () => {
 
-        setMobileCategoryOpen(prev => {
+        setMobileCategoryOpen(
+            previous => {
 
-            const newValue = !prev;
+                const newValue =
+                    !previous;
 
-            // When closing menu
-            if (!newValue) {
 
-                setMobileActiveCategory(null);
+                if (!newValue) {
+
+                    setMobileActiveCategory(
+                        null
+                    );
+
+                }
+
+
+                return newValue;
 
             }
-
-            return newValue;
-
-        });
+        );
 
     };
 
@@ -239,8 +385,13 @@ export default function Category() {
         const handleClickOutside = (event) => {
 
             if (
+
                 categoryRef.current &&
-                !categoryRef.current.contains(event.target)
+
+                !categoryRef.current.contains(
+                    event.target
+                )
+
             ) {
 
                 setActiveCategory(null);
@@ -275,6 +426,32 @@ export default function Category() {
 
 
     // =========================================================
+    // LOADING
+    // =========================================================
+
+    if (loading) {
+
+        return (
+
+            <div
+                className="category-container"
+                ref={categoryRef}
+            >
+
+                <div className="category-loading">
+
+                    Loading categories...
+
+                </div>
+
+            </div>
+
+        );
+
+    }
+
+
+    // =========================================================
     // RETURN
     // =========================================================
 
@@ -292,7 +469,10 @@ export default function Category() {
 
             <button
                 className="mobile-category-toggle"
-                onClick={handleMobileCategoryToggle}
+
+                onClick={
+                    handleMobileCategoryToggle
+                }
             >
 
                 <i className="bi bi-list"></i>
@@ -316,22 +496,27 @@ export default function Category() {
                 DESKTOP CATEGORY MENU
             ================================================= */}
 
-            <div className="category-row desktop-category-menu">
+            <div
+                className="category-row desktop-category-menu"
+            >
 
-                {
-                    categories.map(category => (
+                {categories.map(
+                    category => (
 
                         <button
                             key={category}
 
                             className={
-                                activeCategory === category
+                                activeCategory ===
+                                category
                                     ? "category active"
                                     : "category"
                             }
 
                             onClick={() =>
-                                handleCategoryClick(category)
+                                handleCategoryClick(
+                                    category
+                                )
                             }
                         >
 
@@ -340,24 +525,25 @@ export default function Category() {
                             </span>
 
 
-                            {
-                                hasSubcategories(category) && (
+                            {hasSubcategories(
+                                category
+                            ) && (
 
-                                    <i
-                                        className={
-                                            activeCategory === category
-                                                ? "bi bi-chevron-up"
-                                                : "bi bi-chevron-down"
-                                        }
-                                    ></i>
+                                <i
+                                    className={
+                                        activeCategory ===
+                                        category
+                                            ? "bi bi-chevron-up"
+                                            : "bi bi-chevron-down"
+                                    }
+                                ></i>
 
-                                )
-                            }
+                            )}
 
                         </button>
 
-                    ))
-                }
+                    )
+                )}
 
             </div>
 
@@ -366,39 +552,45 @@ export default function Category() {
                 DESKTOP SUBCATEGORY
             ================================================= */}
 
-            {
-                activeCategory &&
-                getSubcategories(activeCategory).length > 0 && (
+            {activeCategory &&
 
-                    <div className="subcategory-row desktop-subcategory-menu">
+                getSubcategories(
+                    activeCategory
+                ).length > 0 && (
 
-                        {
-                            getSubcategories(activeCategory).map(
-                                subcategory => (
+                    <div
+                        className=
+                            "subcategory-row desktop-subcategory-menu"
+                    >
 
-                                    <button
-                                        key={subcategory}
+                        {getSubcategories(
+                            activeCategory
+                        ).map(
+                            subcategory => (
 
-                                        className={
-                                            selectedSubcategory === subcategory
-                                                ? "subcategory active"
-                                                : "subcategory"
-                                        }
+                                <button
+                                    key={subcategory}
 
-                                        onClick={() =>
-                                            handleSubcategoryClick(
-                                                subcategory
-                                            )
-                                        }
-                                    >
+                                    className={
+                                        selectedSubcategory ===
+                                        subcategory
+                                            ? "subcategory active"
+                                            : "subcategory"
+                                    }
 
-                                        {subcategory}
+                                    onClick={() =>
+                                        handleSubcategoryClick(
+                                            subcategory
+                                        )
+                                    }
+                                >
 
-                                    </button>
+                                    {subcategory}
 
-                                )
+                                </button>
+
                             )
-                        }
+                        )}
 
                     </div>
 
@@ -410,126 +602,135 @@ export default function Category() {
                 MOBILE CATEGORY MENU
             ================================================= */}
 
-            {
-                mobileCategoryOpen && (
+            {mobileCategoryOpen && (
 
-                    <div className="mobile-category-menu">
+                <div
+                    className=
+                        "mobile-category-menu"
+                >
 
-                        {
-                            categories.map(category => {
+                    {categories.map(
+                        category => {
 
-                                const categorySubcategories =
-                                    getSubcategories(category);
-
-                                const isActive =
-                                    mobileActiveCategory === category;
-
-
-                                return (
-
-                                    <div
-                                        className={
-                                            isActive
-                                                ? "mobile-category-item active"
-                                                : "mobile-category-item"
-                                        }
-                                        key={category}
-                                    >
-
-
-                                        {/* MAIN CATEGORY */}
-
-                                        <button
-                                            className={
-                                                isActive
-                                                    ? "mobile-main-category active"
-                                                    : "mobile-main-category"
-                                            }
-
-                                            onClick={() =>
-                                                handleMobileCategoryClick(
-                                                    category
-                                                )
-                                            }
-                                        >
-
-                                            <span>
-                                                {category}
-                                            </span>
-
-
-                                            {
-                                                categorySubcategories.length > 0 && (
-
-                                                    <i
-                                                        className={
-                                                            isActive
-                                                                ? "bi bi-chevron-up"
-                                                                : "bi bi-chevron-down"
-                                                        }
-                                                    ></i>
-
-                                                )
-                                            }
-
-                                        </button>
-
-
-                                        {/* =================================================
-                                            SUBCATEGORIES
-                                        ================================================= */}
-
-                                        {
-                                            isActive &&
-                                            categorySubcategories.length > 0 && (
-
-                                                <div className="mobile-subcategory-list">
-
-                                                    {
-                                                        categorySubcategories.map(
-                                                            subcategory => (
-
-                                                                <button
-                                                                    key={subcategory}
-
-                                                                    className="mobile-subcategory"
-
-                                                                    onClick={() =>
-                                                                        handleSubcategoryClick(
-                                                                            subcategory
-                                                                        )
-                                                                    }
-                                                                >
-
-                                                                    <span>
-                                                                        {subcategory}
-                                                                    </span>
-
-                                                                    <i className="bi bi-chevron-right"></i>
-
-                                                                </button>
-
-                                                            )
-                                                        )
-                                                    }
-
-                                                </div>
-
-                                            )
-                                        }
-
-                                    </div>
-
+                            const categorySubcategories =
+                                getSubcategories(
+                                    category
                                 );
 
-                            })
+
+                            const isActive =
+                                mobileActiveCategory ===
+                                category;
+
+
+                            return (
+
+                                <div
+                                    className={
+                                        isActive
+                                            ? "mobile-category-item active"
+                                            : "mobile-category-item"
+                                    }
+
+                                    key={category}
+                                >
+
+
+                                    {/* MAIN CATEGORY */}
+
+                                    <button
+                                        className={
+                                            isActive
+                                                ? "mobile-main-category active"
+                                                : "mobile-main-category"
+                                        }
+
+                                        onClick={() =>
+                                            handleMobileCategoryClick(
+                                                category
+                                            )
+                                        }
+                                    >
+
+                                        <span>
+                                            {category}
+                                        </span>
+
+
+                                        {categorySubcategories.length >
+                                            0 && (
+
+                                            <i
+                                                className={
+                                                    isActive
+                                                        ? "bi bi-chevron-up"
+                                                        : "bi bi-chevron-down"
+                                                }
+                                            ></i>
+
+                                        )}
+
+                                    </button>
+
+
+                                    {/* =================================================
+                                        SUBCATEGORIES
+                                    ================================================= */}
+
+                                    {isActive &&
+                                        categorySubcategories.length >
+                                            0 && (
+
+                                            <div
+                                                className=
+                                                    "mobile-subcategory-list"
+                                            >
+
+                                                {categorySubcategories.map(
+                                                    subcategory => (
+
+                                                        <button
+                                                            key={
+                                                                subcategory
+                                                            }
+
+                                                            className=
+                                                                "mobile-subcategory"
+
+                                                            onClick={() =>
+                                                                handleSubcategoryClick(
+                                                                    subcategory
+                                                                )
+                                                            }
+                                                        >
+
+                                                            <span>
+                                                                {
+                                                                    subcategory
+                                                                }
+                                                            </span>
+
+                                                            <i className="bi bi-chevron-right"></i>
+
+                                                        </button>
+
+                                                    )
+                                                )}
+
+                                            </div>
+
+                                        )}
+
+                                </div>
+
+                            );
+
                         }
+                    )}
 
-                    </div>
+                </div>
 
-                )
-
-            }
+            )}
 
         </div>
 

@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { deleteProduct } from "../api/productApi";
+
+
+// =====================================================
+// CATEGORY PRODUCTS
+// =====================================================
+
 export default function CategoryProducts({
     subcategory,
     products
@@ -9,25 +16,175 @@ export default function CategoryProducts({
     const navigate = useNavigate();
 
 
-    const [randomProducts] = useState(() => {
+    // =====================================================
+    // ADMIN CHECK
+    // =====================================================
 
-        return [...products]
-            .sort(() => Math.random() - 0.5)
-            .slice(0, 4);
+    const [isAdmin, setIsAdmin] = useState(false);
 
-    });
 
+    useEffect(() => {
+
+        const user =
+            JSON.parse(
+                localStorage.getItem("user") || "null"
+            );
+
+        console.log("CATEGORY USER:", user);
+        console.log("CATEGORY ROLE:", user?.role);
+
+        setIsAdmin(
+            user?.role?.toString().toUpperCase() === "ADMIN"
+        );
+
+    }, []);
+
+
+    // =====================================================
+    // RANDOM PRODUCTS
+    // =====================================================
+
+    const [randomProducts, setRandomProducts] =
+        useState(() => {
+
+            return [...products]
+                .sort(() => Math.random() - 0.5)
+                .slice(0, 4);
+
+        });
+
+
+    // =====================================================
+    // UPDATE RANDOM PRODUCTS
+    // =====================================================
+
+    useEffect(() => {
+
+        setRandomProducts(
+
+            [...products]
+                .sort(() => Math.random() - 0.5)
+                .slice(0, 4)
+
+        );
+
+    }, [products]);
+
+
+    // =====================================================
+    // ADMIN = ALL PRODUCTS
+    // USER = 4 PRODUCTS
+    // =====================================================
+
+    const displayedProducts =
+        isAdmin
+            ? products
+            : randomProducts;
+
+
+    // =====================================================
+    // DELETE PRODUCT
+    // =====================================================
+
+    const handleDelete = async (
+        event,
+        product
+    ) => {
+
+        event.stopPropagation();
+
+        const confirmed =
+            window.confirm(
+                `Are you sure you want to delete "${product.name}"?`
+            );
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        try {
+
+            await deleteProduct(product.id);
+
+            alert(
+                "Product deleted successfully"
+            );
+
+
+            // Remove from current display
+
+            setRandomProducts(
+                previous =>
+                    previous.filter(
+                        item =>
+                            item.id !== product.id
+                    )
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Delete product error:",
+                error
+            );
+
+            alert(
+                "Failed to delete product"
+            );
+
+        }
+
+    };
+
+
+    // =====================================================
+    // EDIT PRODUCT
+    // =====================================================
+
+    const handleEdit = (
+        event,
+        product
+    ) => {
+
+        event.stopPropagation();
+
+
+        localStorage.setItem(
+            "editingProduct",
+            JSON.stringify(product)
+        );
+
+
+        navigate("/admin");
+
+    };
+
+
+    // =====================================================
+    // RETURN
+    // =====================================================
 
     return (
-        <section className="home-category-section">
 
-            <div className="home-category-header">
+        <section
+            className="home-category-section"
+        >
+
+            {/* CATEGORY HEADER */}
+
+            <div
+                className="home-category-header"
+            >
 
                 <h2>
                     {subcategory}
                 </h2>
 
+
                 <button
+                    type="button"
                     onClick={() =>
                         navigate(
                             `/category/${encodeURIComponent(
@@ -36,80 +193,321 @@ export default function CategoryProducts({
                         )
                     }
                 >
+
                     View All
+
                 </button>
 
             </div>
 
 
-            <div className="home-product-row">
+            {/* PRODUCT ROW */}
 
-                {randomProducts.map(product => (
+            <div
+                className="home-product-row"
+            >
 
-                    <ProductCard
-                        key={product.id}
-                        product={product}
+                {displayedProducts.map(
+                    product => (
 
-                        onClick={() =>
-                            navigate(
-                                `/product/${product.id}`
-                            )
-                        }
-                    />
+                        <ProductCard
 
-                ))}
+                            key={product.id}
+
+                            product={product}
+
+                            isAdmin={isAdmin}
+
+                            onClick={() =>
+                                navigate(
+                                    `/product/${product.id}`
+                                )
+                            }
+
+                            onEdit={handleEdit}
+
+                            onDelete={handleDelete}
+
+                        />
+
+                    )
+                )}
 
             </div>
 
         </section>
+
     );
+
 }
 
+
+// =====================================================
+// PRODUCT CARD
+// =====================================================
+
 export function ProductCard({
+
     product,
-    onClick
+    onClick,
+    isAdmin,
+    onEdit,
+    onDelete
+
 }) {
 
-    const [imageIndex, setImageIndex] = useState(0);
+    const [imageIndex, setImageIndex] =
+        useState(0);
 
     const [isHovered, setIsHovered] =
         useState(false);
 
 
+    // =====================================================
+    // DIRECT ADMIN CHECK
+    // =====================================================
+
+    const storedUser =
+        JSON.parse(
+            localStorage.getItem("user") || "null"
+        );
+
+
+    const adminUser =
+        storedUser?.role
+            ?.toString()
+            .toUpperCase() === "ADMIN";
+
+
+    console.log(
+        "PRODUCT:",
+        product.name,
+        "ADMIN:",
+        adminUser
+    );
+
+
+    // =====================================================
+    // GET PRODUCT IMAGES
+    // =====================================================
+
+    const getProductImages = (image) => {
+
+        if (!image) {
+
+            return [
+                "/placeholder.png"
+            ];
+
+        }
+
+
+        // ARRAY
+
+        if (Array.isArray(image)) {
+
+            const images =
+                image.filter(
+                    item =>
+                        typeof item === "string" &&
+                        item.trim() !== ""
+                );
+
+            return images.length
+                ? images
+                : ["/placeholder.png"];
+
+        }
+
+
+        // STRING
+
+        if (typeof image === "string") {
+
+            const trimmed =
+                image.trim();
+
+
+            if (!trimmed) {
+
+                return [
+                    "/placeholder.png"
+                ];
+
+            }
+
+
+            // JSON ARRAY
+
+            try {
+
+                const parsed =
+                    JSON.parse(trimmed);
+
+
+                if (
+                    Array.isArray(parsed)
+                ) {
+
+                    const images =
+                        parsed.filter(
+                            item =>
+                                typeof item === "string" &&
+                                item.trim() !== ""
+                        );
+
+
+                    if (images.length) {
+
+                        return images;
+
+                    }
+
+                }
+
+            } catch (error) {
+
+                // Normal image URL
+
+            }
+
+
+            // COMMA SEPARATED
+
+            if (
+                trimmed.includes(",")
+            ) {
+
+                const images =
+                    trimmed
+                        .split(",")
+                        .map(
+                            item =>
+                                item.trim()
+                        )
+                        .filter(Boolean);
+
+
+                if (images.length) {
+
+                    return images;
+
+                }
+
+            }
+
+
+            return [
+                trimmed
+            ];
+
+        }
+
+
+        return [
+            "/placeholder.png"
+        ];
+
+    };
+
+
+    const productImages =
+        getProductImages(
+            product.image
+        );
+
+
+    // =====================================================
+    // RESET IMAGE
+    // =====================================================
+
+    useEffect(() => {
+
+        setImageIndex(0);
+
+    }, [
+        product.image
+    ]);
+
+
+    // =====================================================
+    // HOVER IMAGE SLIDER
+    // =====================================================
+
     useEffect(() => {
 
         if (
             !isHovered ||
-            !product.image ||
-            product.image.length <= 1
+            productImages.length <= 1
         ) {
+
             return;
+
         }
 
-        const interval = setInterval(() => {
 
-            setImageIndex(previous =>
-                (previous + 1) %
-                product.image.length
-            );
+        const interval =
+            setInterval(() => {
 
-        }, 1000);
+                setImageIndex(
+                    previous =>
+                        (
+                            previous + 1
+                        ) %
+                        productImages.length
+                );
+
+            }, 1000);
+
 
         return () => {
-            clearInterval(interval);
+
+            clearInterval(
+                interval
+            );
+
         };
 
-    }, [isHovered, product.image]);
+    }, [
+        isHovered,
+        product.image,
+        productImages.length
+    ]);
 
+
+    // =====================================================
+    // PRICE
+    // =====================================================
+
+    const price =
+        Number(product.price) || 0;
+
+
+    const offerprice =
+        Number(product.offerprice) || 0;
+
+
+    // =====================================================
+    // DISCOUNT
+    // =====================================================
 
     const discount =
-        product.offerprice && product.price
+        price > 0 &&
+        offerprice > 0
+
             ? Math.round(
-                ((product.price - product.offerprice) /
-                    product.price) * 100
+                (
+                    (price - offerprice) /
+                    price
+                ) * 100
             )
+
             : 0;
 
+
+    // =====================================================
+    // CARD
+    // =====================================================
 
     return (
 
@@ -123,42 +521,142 @@ export function ProductCard({
             }
 
             onMouseLeave={() => {
+
                 setIsHovered(false);
+
                 setImageIndex(0);
+
             }}
         >
 
-            <div className="home-product-image">
+            {/* =================================================
+                IMAGE
+            ================================================= */}
+
+            <div
+                className="home-product-image"
+            >
 
                 <img
-                    src={product.image[imageIndex]}
-                    alt={product.name}
+                    src={
+                        productImages[
+                            imageIndex
+                        ] ||
+                        "/placeholder.png"
+                    }
+
+                    alt={
+                        product.name ||
+                        "Product"
+                    }
                 />
 
             </div>
 
 
-            <div className="home-product-info">
+            {/* =================================================
+                ADMIN BUTTONS
+            ================================================= */}
+
+            {adminUser && (
+
+                <div
+                    className="home-admin-actions"
+
+                    onClick={(event) =>
+                        event.stopPropagation()
+                    }
+                >
+
+                    <button
+                        type="button"
+
+                        className="home-edit-btn"
+
+                        onClick={(event) =>
+                            onEdit(
+                                event,
+                                product
+                            )
+                        }
+                    >
+
+                        Edit
+
+                    </button>
+
+
+                    <button
+                        type="button"
+
+                        className="home-delete-btn"
+
+                        onClick={(event) =>
+                            onDelete(
+                                event,
+                                product
+                            )
+                        }
+                    >
+
+                        Delete
+
+                    </button>
+
+                </div>
+
+            )}
+
+
+            {/* =================================================
+                PRODUCT INFORMATION
+            ================================================= */}
+
+            <div
+                className="home-product-info"
+            >
 
                 <h3>
                     {product.name}
                 </h3>
 
 
-                <div className="product-price">
+                <div
+                    className="product-price"
+                >
 
-                    <span className="offer-price">
-                        ₹{product.offerprice}
+                    <span
+                        className="offer-price"
+                    >
+
+                        ₹{offerprice}
+
                     </span>
 
-                     <span className="original-price">
-                        ₹{product.price}
-                    </span>
+
+                    {price > 0 && (
+
+                        <span
+                            className="original-price"
+                        >
+
+                            ₹{price}
+
+                        </span>
+
+                    )}
+
 
                     {discount > 0 && (
-                        <span className="discount">
+
+                        <span
+                            className="discount"
+                        >
+
                             {discount}% OFF
+
                         </span>
+
                     )}
 
                 </div>
@@ -166,5 +664,7 @@ export function ProductCard({
             </div>
 
         </div>
+
     );
+
 }

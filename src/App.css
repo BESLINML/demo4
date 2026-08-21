@@ -3677,3 +3677,2230 @@ img {
     }
 
 }
+
+
+/* =========================================================
+   YAZHL CRAFTS
+   MODERN ADMIN DASHBOARD
+   VIOLET / CHARCOAL / WHITE
+========================================================= */
+
+
+/* =========================================================
+   ROOT COLORS
+========================================================= */
+
+:root {
+    --admin-violet: #7c3aed;
+    --admin-violet-dark: #6d28d9;
+    --admin-violet-deep: #5b21b6;
+
+    --admin-violet-light: #f3e8ff;
+    --admin-violet-soft: #faf5ff;
+
+    --admin-charcoal: #242424;
+    --admin-dark: #1f1f1f;
+
+    --admin-gray: #777;
+    --admin-light-gray: #eeeeee;
+
+    --admin-danger: #dc3545;
+}
+
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+
+    font-family: "Poppins", sans-serif;
+
+    color: var(--admin-charcoal);
+
+    background: #f7f7fa;
+}
+
+
+/* =========================================================
+   ADMIN PAGE
+========================================================= */
+
+.admin-page {
+    width: 100%;
+    min-height: 100vh;
+
+    padding: 40px 5%;
+
+    background:
+        radial-gradient(
+            circle at top right,
+            rgba(124, 58, 237, 0.10),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at bottom left,
+            rgba(139, 92, 246, 0.07),
+            transparent 30%
+        ),
+        #f7f7fa;
+
+    color: var(--admin-charcoal);
+}
+
+
+/* =========================================================
+   ADMIN PAGE TITLE
+========================================================= */
+
+.admin-page > h1 {
+    margin: 0 0 35px;
+
+    font-size: 35px;
+    font-weight: 800;
+
+    letter-spacing: -0.8px;
+
+    color: var(--admin-dark);
+
+    display: flex;
+    align-items: center;
+
+    gap: 13px;
+}
+
+.admin-page > h1::before {
+    content: "";
+
+    width: 6px;
+    height: 40px;
+
+    border-radius: 20px;
+
+    background: linear-gradient(
+        180deg,
+        var(--admin-violet),
+        var(--admin-violet-deep)
+    );
+}
+
+
+/* =========================================================
+   ADMIN MAIN SECTIONS
+========================================================= */
+
+.admin-banner-section,
+.admin-product-section {
+    position: relative;
+
+    width: 100%;
+
+    background: rgba(255, 255, 255, 0.97);
+
+    border: 1px solid #eeeeee;
+
+    border-radius: 24px;
+
+    padding: 32px;
+
+    margin-bottom: 30px;
+
+    box-shadow:
+        0 15px 45px rgba(30, 30, 30, 0.07),
+        0 2px 8px rgba(30, 30, 30, 0.03);
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   TOP VIOLET LINE
+========================================================= */
+
+.admin-banner-section::before,
+.admin-product-section::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    height: 4px;
+
+    background: linear-gradient(
+        90deg,
+        var(--admin-violet),
+        var(--admin-violet-dark),
+        var(--admin-violet-deep)
+    );
+}
+
+
+/* =========================================================
+   SECTION HEADINGS
+========================================================= */
+
+.admin-banner-section > h2,
+.admin-product-section > h2 {
+    margin: 0 0 28px;
+
+    font-size: 23px;
+    font-weight: 750;
+
+    color: #222;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+/* =========================================================
+   SECTION ICONS
+========================================================= */
+
+.admin-banner-section > h2::before {
+    content: "🖼️";
+
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: var(--admin-violet-light);
+
+    font-size: 19px;
+}
+
+.admin-product-section > h2::before {
+    content: "🛍️";
+
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: var(--admin-violet-light);
+
+    font-size: 19px;
+}
+
+
+/* =========================================================
+   BANNER / PRODUCT FORM
+========================================================= */
+
+.admin-banner-form,
+.admin-product-form {
+    width: 100%;
+    max-width: 800px;
+
+    background: #fbfbfc;
+
+    border: 1px solid #ededf0;
+
+    border-radius: 20px;
+
+    padding: 28px;
+
+    margin-bottom: 35px;
+}
+
+
+/* =========================================================
+   FORM TITLES
+========================================================= */
+
+.admin-banner-form h3,
+.admin-product-form h2 {
+    margin: 0 0 22px;
+
+    font-size: 20px;
+    font-weight: 700;
+
+    color: #292929;
+}
+
+
+/* =========================================================
+   LABELS
+========================================================= */
+
+.admin-banner-form label,
+.admin-product-form label {
+    display: block;
+
+    margin: 16px 0 8px;
+
+    color: #555;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    letter-spacing: 0.2px;
+}
+
+
+/* =========================================================
+   INPUTS
+========================================================= */
+
+.admin-banner-form input[type="text"],
+.admin-banner-form input[type="number"],
+.admin-banner-form textarea,
+
+.admin-product-form input[type="text"],
+.admin-product-form input[type="number"],
+.admin-product-form textarea {
+    width: 100%;
+
+    border: 1px solid #e3e3e7;
+
+    border-radius: 12px;
+
+    padding: 14px 16px;
+
+    background: #fff;
+
+    color: #292929;
+
+    font-size: 14px;
+
+    outline: none;
+
+    margin-bottom: 5px;
+
+    transition:
+        border 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+
+/* =========================================================
+   INPUT HOVER
+========================================================= */
+
+.admin-banner-form input:hover,
+.admin-banner-form textarea:hover,
+
+.admin-product-form input:hover,
+.admin-product-form textarea:hover {
+    border-color: #b69af5;
+}
+
+
+/* =========================================================
+   INPUT FOCUS
+========================================================= */
+
+.admin-banner-form input:focus,
+.admin-banner-form textarea:focus,
+
+.admin-product-form input:focus,
+.admin-product-form textarea:focus {
+    border-color: var(--admin-violet);
+
+    box-shadow:
+        0 0 0 4px rgba(124, 58, 237, 0.10);
+}
+
+
+/* =========================================================
+   TEXTAREA
+========================================================= */
+
+.admin-banner-form textarea,
+.admin-product-form textarea {
+    min-height: 115px;
+
+    resize: vertical;
+
+    line-height: 1.6;
+
+    font-family: inherit;
+}
+
+
+/* =========================================================
+   FILE UPLOAD
+========================================================= */
+
+.admin-banner-form input[type="file"],
+.admin-product-form input[type="file"] {
+    width: 100%;
+
+    padding: 17px;
+
+    border: 2px dashed #c4b5fd;
+
+    border-radius: 14px;
+
+    background: #faf5ff;
+
+    color: #777;
+
+    cursor: pointer;
+
+    transition: 0.25s ease;
+}
+
+.admin-banner-form input[type="file"]:hover,
+.admin-product-form input[type="file"]:hover {
+    border-color: var(--admin-violet);
+
+    background: var(--admin-violet-light);
+}
+
+
+/* =========================================================
+   BANNER PREVIEW
+========================================================= */
+
+.admin-banner-preview {
+    position: relative;
+
+    width: 100%;
+    height: 270px;
+
+    margin: 18px 0 22px;
+
+    overflow: hidden;
+
+    border-radius: 16px;
+
+    background: #eeeeee;
+
+    border: 1px solid #e7e7e7;
+}
+
+.admin-banner-preview img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+
+    transition: transform 0.5s ease;
+}
+
+.admin-banner-preview:hover img {
+    transform: scale(1.03);
+}
+
+
+/* =========================================================
+   PREVIEW LABEL
+========================================================= */
+
+.admin-banner-preview::after {
+    content: "PREVIEW";
+
+    position: absolute;
+
+    top: 12px;
+    left: 12px;
+
+    padding: 5px 9px;
+
+    border-radius: 6px;
+
+    background: rgba(0, 0, 0, 0.65);
+
+    color: #fff;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    letter-spacing: 1px;
+}
+
+
+/* =========================================================
+   PRODUCT IMAGE PREVIEW CONTAINER
+========================================================= */
+
+.admin-image-preview-container {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fill, minmax(125px, 1fr));
+
+    gap: 14px;
+
+    margin: 20px 0;
+}
+
+
+/* =========================================================
+   PRODUCT IMAGE PREVIEW
+========================================================= */
+
+.admin-image-preview {
+    position: relative;
+
+    height: 125px;
+
+    border-radius: 14px;
+
+    overflow: hidden;
+
+    background: #eee;
+
+    border: 1px solid #e5e5e5;
+
+    box-shadow:
+        0 5px 15px rgba(0, 0, 0, 0.06);
+}
+
+.admin-image-preview img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+
+    transition: transform 0.4s ease;
+}
+
+.admin-image-preview:hover img {
+    transform: scale(1.08);
+}
+
+
+/* =========================================================
+   REMOVE IMAGE BUTTON
+========================================================= */
+
+.admin-image-preview button {
+    position: absolute;
+
+    right: 8px;
+    top: 8px;
+
+    width: 29px;
+    height: 29px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: rgba(20, 20, 20, 0.75);
+
+    color: white;
+
+    font-size: 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.admin-image-preview button:hover {
+    background: var(--admin-danger);
+
+    transform: rotate(90deg);
+}
+
+
+/* =========================================================
+   FORM BUTTONS
+========================================================= */
+
+.admin-banner-form button,
+.admin-product-form button {
+    border: none;
+
+    border-radius: 11px;
+
+    padding: 13px 22px;
+
+    margin-top: 10px;
+    margin-right: 8px;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease,
+        opacity 0.2s ease;
+}
+
+
+/* =========================================================
+   SUBMIT BUTTON
+========================================================= */
+
+.admin-banner-form button[type="submit"],
+.admin-product-form button[type="submit"] {
+    color: #fff;
+
+    background: linear-gradient(
+        135deg,
+        var(--admin-violet),
+        var(--admin-violet-dark)
+    );
+}
+
+.admin-banner-form button[type="submit"]:hover,
+.admin-product-form button[type="submit"]:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 12px 25px rgba(124, 58, 237, 0.30);
+}
+
+
+/* =========================================================
+   CANCEL BUTTON
+========================================================= */
+
+.admin-banner-form button[type="button"],
+.admin-product-form button[type="button"] {
+    background: #eeeeF2;
+
+    color: #555;
+}
+
+.admin-banner-form button[type="button"]:hover,
+.admin-product-form button[type="button"]:hover {
+    background: #e4e4e9;
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   DISABLED BUTTON
+========================================================= */
+
+.admin-banner-form button:disabled,
+.admin-product-form button:disabled {
+    opacity: 0.55;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+
+/* =========================================================
+   BANNER LIST
+========================================================= */
+
+.admin-banner-list {
+    margin-top: 30px;
+}
+
+.admin-banner-list > h3,
+.admin-products > h2 {
+    margin: 0 0 20px;
+
+    font-size: 19px;
+    font-weight: 750;
+
+    color: #333;
+}
+
+
+/* =========================================================
+   BANNER GRID
+========================================================= */
+
+.admin-banner-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fill, minmax(300px, 1fr));
+
+    gap: 22px;
+}
+
+
+/* =========================================================
+   BANNER CARD
+========================================================= */
+
+.admin-banner-card {
+    position: relative;
+
+    background: #fff;
+
+    border: 1px solid #eeeeee;
+
+    border-radius: 18px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.055);
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease,
+        border-color 0.3s ease;
+}
+
+.admin-banner-card:hover {
+    transform: translateY(-6px);
+
+    border-color: #d8b4fe;
+
+    box-shadow:
+        0 18px 40px rgba(124, 58, 237, 0.12);
+}
+
+
+/* =========================================================
+   BANNER CARD IMAGE
+========================================================= */
+
+.admin-banner-card > img {
+    width: 100%;
+    height: 185px;
+
+    display: block;
+
+    object-fit: cover;
+
+    background: #eee;
+
+    transition: transform 0.5s ease;
+}
+
+.admin-banner-card:hover > img {
+    transform: scale(1.04);
+}
+
+
+/* =========================================================
+   BANNER CARD TITLE
+========================================================= */
+
+.admin-banner-card h3 {
+    margin: 18px 18px 7px;
+
+    font-size: 17px;
+    font-weight: 750;
+
+    color: #222;
+}
+
+
+/* =========================================================
+   BANNER CARD DESCRIPTION
+========================================================= */
+
+.admin-banner-card p {
+    margin: 0 18px 18px;
+
+    color: #777;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+
+    min-height: 42px;
+}
+
+
+/* =========================================================
+   BANNER ACTIONS
+========================================================= */
+
+.admin-banner-actions {
+    display: flex;
+
+    gap: 9px;
+
+    padding: 0 18px 18px;
+}
+
+.admin-banner-actions button {
+    flex: 1;
+
+    border: none;
+
+    border-radius: 10px;
+
+    padding: 11px;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+
+/* =========================================================
+   BANNER EDIT
+========================================================= */
+
+.admin-banner-actions button:first-child {
+    background: var(--admin-violet-light);
+
+    color: var(--admin-violet-dark);
+}
+
+.admin-banner-actions button:first-child:hover {
+    background: #ede9fe;
+
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   BANNER DELETE
+========================================================= */
+
+.admin-banner-actions button:last-child {
+    background: #fff1f2;
+
+    color: var(--admin-danger);
+}
+
+.admin-banner-actions button:last-child:hover {
+    background: #ffe1e5;
+
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   PRODUCT GRID
+========================================================= */
+
+.admin-product-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fill, minmax(240px, 1fr));
+
+    gap: 22px;
+}
+
+
+/* =========================================================
+   PRODUCT CARD
+========================================================= */
+
+.admin-product-card {
+    position: relative;
+
+    background: #fff;
+
+    border: 1px solid #eeeeee;
+
+    border-radius: 18px;
+
+    overflow: hidden;
+
+    padding-bottom: 18px;
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.055);
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease,
+        border-color 0.3s ease;
+}
+
+.admin-product-card:hover {
+    transform: translateY(-6px);
+
+    border-color: #d8b4fe;
+
+    box-shadow:
+        0 18px 40px rgba(124, 58, 237, 0.15);
+}
+
+
+/* =========================================================
+   PRODUCT CARD IMAGE
+========================================================= */
+
+.admin-product-card > img {
+    width: 100%;
+    height: 240px;
+
+    display: block;
+
+    object-fit: cover;
+
+    background: #f1f1f1;
+
+    transition:
+        transform 0.5s ease,
+        filter 0.3s ease;
+}
+
+.admin-product-card:hover > img {
+    transform: scale(1.04);
+
+    filter: brightness(0.92);
+}
+
+
+/* =========================================================
+   PRODUCT TOP ACTIONS
+   HIDDEN UNTIL HOVER
+========================================================= */
+
+.admin-product-card .admin-actions {
+    position: absolute;
+
+    top: 12px;
+    right: 12px;
+
+    z-index: 20;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+
+    padding: 0;
+
+    margin: 0;
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    transform: translateY(-8px);
+
+    transition:
+        opacity 0.25s ease,
+        visibility 0.25s ease,
+        transform 0.25s ease;
+}
+
+
+/* =========================================================
+   SHOW PRODUCT ACTIONS ON HOVER
+========================================================= */
+
+.admin-product-card:hover .admin-actions {
+    opacity: 1;
+
+    visibility: visible;
+
+    transform: translateY(0);
+}
+
+
+/* =========================================================
+   PRODUCT ACTION BUTTONS
+========================================================= */
+
+.admin-product-card .admin-actions button {
+    width: 42px;
+    height: 42px;
+
+    padding: 0;
+
+    margin: 0;
+
+    border: none;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 5px 15px rgba(0, 0, 0, 0.18);
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+
+/* =========================================================
+   PRODUCT EDIT
+========================================================= */
+
+.admin-product-card .admin-actions button:first-child {
+    background: #ffffff;
+
+    color: var(--admin-violet-dark);
+}
+
+.admin-product-card .admin-actions button:first-child:hover {
+    background: var(--admin-violet);
+
+    color: #ffffff;
+
+    transform: scale(1.1);
+}
+
+
+/* =========================================================
+   PRODUCT DELETE
+========================================================= */
+
+.admin-product-card .admin-actions button:last-child {
+    background: #ffffff;
+
+    color: var(--admin-danger);
+}
+
+.admin-product-card .admin-actions button:last-child:hover {
+    background: var(--admin-danger);
+
+    color: #ffffff;
+
+    transform: scale(1.1);
+}
+
+
+/* =========================================================
+   PRODUCT NAME
+========================================================= */
+
+.admin-product-card h3 {
+    margin: 17px 16px 9px;
+
+    font-size: 16px;
+    font-weight: 750;
+
+    color: #222;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   PRODUCT INFORMATION
+========================================================= */
+
+.admin-product-card p {
+    margin: 6px 16px;
+
+    font-size: 12px;
+
+    color: #777;
+}
+
+.admin-product-card p strong {
+    color: #444;
+}
+
+
+/* =========================================================
+   PRODUCT PRICE
+========================================================= */
+
+.admin-product-card > div:not(.admin-actions) {
+    margin: 13px 16px;
+
+    font-size: 19px;
+
+    font-weight: 800;
+
+    color: var(--admin-violet-dark);
+}
+
+.admin-product-card del {
+    margin-left: 6px;
+
+    color: #aaa;
+
+    font-size: 12px;
+
+    font-weight: 500;
+}
+
+
+/* =========================================================
+   PRODUCT ACTION ICONS
+========================================================= */
+
+.admin-actions i,
+.admin-banner-actions i {
+    margin-right: 6px;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.products-loading,
+.no-products {
+    padding: 30px;
+
+    text-align: center;
+
+    color: #888;
+}
+
+
+/* =========================================================
+   EMPTY STATES
+========================================================= */
+
+.admin-banner-list > p,
+.admin-products > p {
+    padding: 25px;
+
+    text-align: center;
+
+    background: #fafafa;
+
+    border: 1px dashed #ddd;
+
+    border-radius: 14px;
+
+    color: #888;
+}
+
+
+/* =========================================================
+   HOME PRODUCT ADMIN BUTTONS
+========================================================= */
+
+.home-product-image {
+    position: relative;
+}
+
+
+.home-admin-actions {
+    position: absolute;
+
+    top: 10px;
+    right: 10px;
+
+    z-index: 20;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+
+    pointer-events: auto;
+}
+
+
+/* =========================================================
+   HOME EDIT
+========================================================= */
+
+.home-edit-btn {
+    display: flex !important;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 5px;
+
+    padding: 7px 12px;
+
+    border: none;
+
+    border-radius: 7px;
+
+    background: #fff;
+
+    color: var(--admin-violet-dark);
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.20);
+
+    visibility: visible !important;
+
+    opacity: 1 !important;
+
+    transition: 0.2s ease;
+}
+
+
+/* =========================================================
+   HOME DELETE
+========================================================= */
+
+.home-delete-btn {
+    display: flex !important;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 5px;
+
+    padding: 7px 12px;
+
+    border: none;
+
+    border-radius: 7px;
+
+    background: var(--admin-danger);
+
+    color: #fff;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.20);
+
+    visibility: visible !important;
+
+    opacity: 1 !important;
+
+    transition: 0.2s ease;
+}
+
+
+.home-edit-btn:hover,
+.home-delete-btn:hover {
+    transform: scale(1.05);
+}
+
+
+/* =========================================================
+   SUBCATEGORY ADMIN ACTIONS
+========================================================= */
+
+.subcategory-admin-actions {
+    display: flex;
+
+    gap: 10px;
+
+    margin-top: 12px;
+
+    width: 100%;
+}
+
+.subcategory-edit-btn,
+.subcategory-delete-btn {
+    flex: 1;
+
+    border: none;
+
+    padding: 9px 12px;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    transition: 0.2s ease;
+}
+
+
+/* =========================================================
+   SUBCATEGORY EDIT
+========================================================= */
+
+.subcategory-edit-btn {
+    background: var(--admin-charcoal);
+
+    color: #fff;
+}
+
+.subcategory-edit-btn:hover {
+    background: #444;
+
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   SUBCATEGORY DELETE
+========================================================= */
+
+.subcategory-delete-btn {
+    background: var(--admin-danger);
+
+    color: #fff;
+}
+
+.subcategory-delete-btn:hover {
+    background: #b02a37;
+
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   PRODUCT DETAILS ADMIN ACTIONS
+========================================================= */
+
+.product-admin-actions {
+    display: flex;
+
+    gap: 12px;
+
+    margin: 20px 0;
+
+    width: 100%;
+    justify-content: center;
+}
+
+.product-edit-btn,
+.product-delete-btn {
+    border: none;
+
+    padding: 11px 20px;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    transition: 0.2s ease;
+}
+
+
+/* =========================================================
+   PRODUCT DETAILS EDIT
+========================================================= */
+
+.product-edit-btn {
+    background: var(--admin-charcoal);
+
+    color: #fff;
+}
+
+.product-edit-btn:hover {
+    background: #444;
+
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   PRODUCT DETAILS DELETE
+========================================================= */
+
+.product-delete-btn {
+    background: var(--admin-danger);
+
+    color: #fff;
+}
+
+.product-delete-btn:hover {
+    background: #b02a37;
+
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   ADMIN SCROLLBAR
+========================================================= */
+
+.admin-page::-webkit-scrollbar {
+    width: 8px;
+}
+
+.admin-page::-webkit-scrollbar-track {
+    background: #f5f5f5;
+}
+
+.admin-page::-webkit-scrollbar-thumb {
+    background: #c4b5fd;
+
+    border-radius: 10px;
+}
+
+.admin-page::-webkit-scrollbar-thumb:hover {
+    background: var(--admin-violet-dark);
+}
+
+
+/* =========================================================
+   TOUCH DEVICES
+========================================================= */
+
+@media (hover: none) and (pointer: coarse) {
+
+    .admin-product-card .admin-actions {
+        opacity: 1;
+
+        visibility: visible;
+
+        transform: translateY(0);
+    }
+
+    .admin-product-card .admin-actions button {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+
+/* =========================================================
+   TABLET
+   900px
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .admin-page {
+        padding: 30px 3%;
+    }
+
+    .admin-banner-section,
+    .admin-product-section {
+        padding: 25px;
+    }
+
+    .admin-product-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .admin-banner-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+   650px
+========================================================= */
+
+@media (max-width: 650px) {
+
+    .admin-page {
+        padding: 20px 12px;
+    }
+
+
+    /* PAGE TITLE */
+
+    .admin-page > h1 {
+        font-size: 27px;
+
+        margin-bottom: 25px;
+
+        gap: 10px;
+    }
+
+    .admin-page > h1::before {
+        width: 5px;
+
+        height: 31px;
+    }
+
+
+    /* SECTIONS */
+
+    .admin-banner-section,
+    .admin-product-section {
+        padding: 18px;
+
+        border-radius: 18px;
+
+        margin-bottom: 20px;
+    }
+
+
+    /* SECTION TITLES */
+
+    .admin-banner-section > h2,
+    .admin-product-section > h2 {
+        font-size: 19px;
+
+        gap: 9px;
+    }
+
+    .admin-banner-section > h2::before,
+    .admin-product-section > h2::before {
+        width: 36px;
+        height: 36px;
+
+        font-size: 16px;
+    }
+
+
+    /* FORMS */
+
+    .admin-banner-form,
+    .admin-product-form {
+        padding: 18px;
+
+        border-radius: 15px;
+    }
+
+    .admin-banner-form h3,
+    .admin-product-form h2 {
+        font-size: 17px;
+    }
+
+
+    /* INPUTS */
+
+    .admin-banner-form input[type="text"],
+    .admin-banner-form input[type="number"],
+    .admin-banner-form textarea,
+
+    .admin-product-form input[type="text"],
+    .admin-product-form input[type="number"],
+    .admin-product-form textarea {
+        padding: 12px 13px;
+
+        font-size: 13px;
+    }
+
+
+    /* BANNER PREVIEW */
+
+    .admin-banner-preview {
+        height: 180px;
+
+        border-radius: 12px;
+    }
+
+
+    /* BANNER GRID */
+
+    .admin-banner-grid {
+        grid-template-columns: 1fr;
+
+        gap: 16px;
+    }
+
+
+    /* PRODUCT GRID */
+
+    .admin-product-grid {
+        grid-template-columns: 1fr;
+
+        gap: 16px;
+    }
+
+
+    /* PRODUCT IMAGE */
+
+    .admin-product-card > img {
+        height: 250px;
+    }
+
+
+    /* PRODUCT ACTION BUTTONS */
+
+    .admin-product-card .admin-actions {
+        top: 10px;
+
+        right: 10px;
+
+        gap: 7px;
+    }
+
+    .admin-product-card .admin-actions button {
+        width: 40px;
+
+        height: 40px;
+
+        font-size: 13px;
+    }
+
+
+    /* IMAGE PREVIEW */
+
+    .admin-image-preview-container {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 10px;
+    }
+
+    .admin-image-preview {
+        height: 130px;
+    }
+
+
+    /* ACTION BUTTONS */
+
+    .admin-actions,
+    .admin-banner-actions {
+        gap: 8px;
+    }
+
+    .admin-actions button,
+    .admin-banner-actions button {
+        padding: 10px;
+
+        font-size: 12px;
+    }
+
+
+    /* HOME ADMIN BUTTONS */
+
+    .home-admin-actions {
+        top: 7px;
+
+        right: 7px;
+
+        gap: 5px;
+    }
+
+    .home-edit-btn,
+    .home-delete-btn {
+        padding: 6px 8px;
+
+        font-size: 11px;
+    }
+
+
+    /* SUBCATEGORY BUTTONS */
+
+    .subcategory-admin-actions {
+        gap: 7px;
+    }
+
+    .subcategory-edit-btn,
+    .subcategory-delete-btn {
+        padding: 8px;
+
+        font-size: 12px;
+    }
+
+
+    /* PRODUCT DETAILS ADMIN */
+
+    .product-admin-actions {
+        gap: 8px;
+
+        flex-direction: column;
+    }
+
+    .product-edit-btn,
+    .product-delete-btn {
+        width: 100%;
+
+        padding: 11px;
+
+        font-size: 13px;
+    }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   400px
+========================================================= */
+
+@media (max-width: 400px) {
+
+    .admin-page {
+        padding: 15px 8px;
+    }
+
+
+    .admin-page > h1 {
+        font-size: 24px;
+    }
+
+
+    .admin-banner-section,
+    .admin-product-section {
+        padding: 14px;
+
+        border-radius: 15px;
+    }
+
+
+    .admin-banner-form,
+    .admin-product-form {
+        padding: 15px;
+    }
+
+
+    .admin-banner-section > h2,
+    .admin-product-section > h2 {
+        font-size: 17px;
+    }
+
+
+    .admin-banner-preview {
+        height: 160px;
+    }
+
+
+    .admin-product-card > img {
+        height: 220px;
+    }
+
+
+    .admin-image-preview-container {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+
+    .admin-image-preview {
+        height: 115px;
+    }
+
+
+    /* SMALL SCREEN PRODUCT ACTIONS */
+
+    .admin-product-card .admin-actions {
+        top: 8px;
+
+        right: 8px;
+
+        gap: 5px;
+    }
+
+    .admin-product-card .admin-actions button {
+        width: 36px;
+
+        height: 36px;
+
+        font-size: 12px;
+    }
+
+
+    /* OTHER ACTIONS */
+
+    .admin-actions,
+    .admin-banner-actions {
+        flex-direction: column;
+    }
+
+    .admin-actions button,
+    .admin-banner-actions button {
+        width: 100%;
+    }
+
+
+    .home-edit-btn,
+    .home-delete-btn {
+        padding: 5px 7px;
+
+        font-size: 10px;
+    }
+}
+
+
+
+/* =========================================================
+   YAZHL CRAFTS
+   MODERN VIOLET LOGIN PAGE
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   LOGIN PAGE
+========================================================= */
+
+.login-page {
+
+    min-height: 100vh;
+
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 30px 20px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f7f2ff 0%,
+            #ffffff 45%,
+            #eee5ff 100%
+        );
+
+    position: relative;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   DECORATIVE BACKGROUND
+========================================================= */
+
+.login-page::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 350px;
+
+    height: 350px;
+
+    border-radius: 50%;
+
+    background: rgba(124, 58, 237, 0.10);
+
+    top: -120px;
+
+    left: -100px;
+}
+
+
+.login-page::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 400px;
+
+    height: 400px;
+
+    border-radius: 50%;
+
+    background: rgba(139, 92, 246, 0.08);
+
+    bottom: -180px;
+
+    right: -120px;
+}
+
+
+/* =========================================================
+   LOGIN BOX
+========================================================= */
+
+.login-box {
+
+    width: 100%;
+
+    max-width: 430px;
+
+    padding: 42px 38px;
+
+    background: rgba(255, 255, 255, 0.97);
+
+    border: 1px solid rgba(124, 58, 237, 0.15);
+
+    border-radius: 22px;
+
+    box-shadow:
+        0 20px 60px rgba(76, 29, 149, 0.12),
+        0 5px 20px rgba(124, 58, 237, 0.08);
+
+    position: relative;
+
+    z-index: 2;
+
+    animation: loginBoxAnimation 0.5s ease;
+}
+
+
+/* =========================================================
+   ANIMATION
+========================================================= */
+
+@keyframes loginBoxAnimation {
+
+    from {
+
+        opacity: 0;
+
+        transform: translateY(25px);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform: translateY(0);
+
+    }
+}
+
+
+/* =========================================================
+   TITLE
+========================================================= */
+
+.login-box h2 {
+
+    margin: 0 0 30px;
+
+    text-align: center;
+
+    font-size: 30px;
+
+    font-weight: 700;
+
+    color: #24113f;
+
+    letter-spacing: 0.3px;
+}
+
+
+.login-box h2::after {
+
+    content: "";
+
+    display: block;
+
+    width: 45px;
+
+    height: 4px;
+
+    border-radius: 10px;
+
+    background: #7c3aed;
+
+    margin: 10px auto 0;
+}
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.login-box form {
+
+    width: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 18px;
+}
+
+
+/* =========================================================
+   INPUTS
+========================================================= */
+
+.login-box input {
+
+    width: 100%;
+
+    height: 52px;
+
+    padding: 0 16px;
+
+    border: 1px solid #ddd6fe;
+
+    border-radius: 12px;
+
+    background: #faf9ff;
+
+    color: #302044;
+
+    font-size: 15px;
+
+    font-family: inherit;
+
+    outline: none;
+
+    transition:
+        border-color 0.25s ease,
+        box-shadow 0.25s ease,
+        background 0.25s ease;
+}
+
+
+.login-box input::placeholder {
+
+    color: #9b8eab;
+}
+
+
+.login-box input:focus {
+
+    border-color: #7c3aed;
+
+    background: #fff;
+
+    box-shadow:
+        0 0 0 4px rgba(124, 58, 237, 0.12);
+}
+
+
+/* =========================================================
+   LOGIN BUTTON
+========================================================= */
+
+.login-box button {
+
+    width: 100%;
+
+    height: 52px;
+
+    margin-top: 5px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7c3aed,
+            #6d28d9
+        );
+
+    color: #fff;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    font-family: inherit;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        opacity 0.2s ease;
+}
+
+
+.login-box button:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 10px 25px rgba(124, 58, 237, 0.30);
+}
+
+
+.login-box button:active {
+
+    transform: translateY(0);
+}
+
+
+.login-box button:disabled {
+
+    cursor: not-allowed;
+
+    opacity: 0.65;
+
+    transform: none;
+
+    box-shadow: none;
+}
+
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+.login-error {
+
+    width: 100%;
+
+    margin-bottom: 20px;
+
+    padding: 12px 15px;
+
+    border-radius: 10px;
+
+    border: 1px solid #fecaca;
+
+    background: #fff1f2;
+
+    color: #dc2626;
+
+    font-size: 14px;
+
+    line-height: 1.5;
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   AUTOFILL
+========================================================= */
+
+.login-box input:-webkit-autofill,
+.login-box input:-webkit-autofill:hover,
+.login-box input:-webkit-autofill:focus {
+
+    -webkit-text-fill-color: #302044;
+
+    -webkit-box-shadow:
+        0 0 0 1000px #faf9ff inset;
+
+    transition:
+        background-color 5000s ease-in-out 0s;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .login-page {
+
+        padding: 25px 18px;
+    }
+
+
+    .login-box {
+
+        max-width: 400px;
+
+        padding: 36px 30px;
+
+        border-radius: 20px;
+    }
+
+
+    .login-box h2 {
+
+        font-size: 27px;
+
+        margin-bottom: 25px;
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+
+    .login-page {
+
+        padding: 20px 15px;
+    }
+
+
+    .login-box {
+
+        padding: 30px 22px;
+
+        border-radius: 18px;
+    }
+
+
+    .login-box h2 {
+
+        font-size: 25px;
+
+        margin-bottom: 24px;
+    }
+
+
+    .login-box input {
+
+        height: 50px;
+
+        font-size: 14px;
+    }
+
+
+    .login-box button {
+
+        height: 50px;
+
+        font-size: 15px;
+    }
+
+
+    .login-error {
+
+        font-size: 13px;
+
+        padding: 11px 12px;
+    }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 360px) {
+
+    .login-box {
+
+        padding: 27px 18px;
+    }
+
+
+    .login-box h2 {
+
+        font-size: 23px;
+    }
+}

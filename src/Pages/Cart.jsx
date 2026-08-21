@@ -10,40 +10,153 @@ export default function Cart() {
         removeFromCart
     } = useContext(CartContext);
 
+
+    // =========================
+    // GET PRODUCT IMAGE
+    // =========================
+
+    const getProductImage = (product) => {
+
+        // Already an array
+        if (Array.isArray(product.image)) {
+
+            return product.image[0] || "/placeholder.png";
+
+        }
+
+
+        // JSON string from MySQL
+        if (
+            typeof product.image === "string" &&
+            product.image.trim() !== ""
+        ) {
+
+            try {
+
+                const parsedImages =
+                    JSON.parse(product.image);
+
+
+                if (Array.isArray(parsedImages)) {
+
+                    return (
+                        parsedImages[0] ||
+                        "/placeholder.png"
+                    );
+
+                }
+
+            } catch (error) {
+
+                // Normal single image string
+                return product.image;
+
+            }
+
+        }
+
+
+        return "/placeholder.png";
+    };
+
+
+    // =========================
+    // SUBTOTAL
+    // =========================
+
     const subtotal = cartItems.reduce(
-        (total, product) =>
-            total + Number(product.offerprice) * (product.quantity || 1),
+
+        (total, product) => {
+
+            const quantity =
+                product.quantity || 1;
+
+            const price =
+                Number(product.offerprice) || 0;
+
+            return total + price * quantity;
+
+        },
+
         0
+
     );
 
-    const shipping = subtotal > 0 ? 150 : 0;
 
-    const grandTotal = subtotal + shipping;
+    // =========================
+    // SHIPPING
+    // =========================
+
+    const shipping =
+        subtotal > 0
+            ? 150
+            : 0;
+
+
+    // =========================
+    // GRAND TOTAL
+    // =========================
+
+    const grandTotal =
+        subtotal + shipping;
+
 
     return (
+
         <div className="cart-page">
 
             <div className="cart-container">
 
-                {/* LEFT */}
+
+                {/* =========================
+                    LEFT
+                ========================= */}
+
                 <div className="cart-left">
 
-                    <h1>Your Bag</h1>
+                    <h1>
+                        Your Bag
+                    </h1>
+
+
+                    {/* =========================
+                        EMPTY CART
+                    ========================= */}
 
                     {cartItems.length === 0 ? (
 
                         <div className="empty-cart">
-                            <p>Your bag is empty.</p>
+
+                            <p>
+                                Your bag is empty.
+                            </p>
+
                         </div>
 
                     ) : (
 
+
+                        /* =========================
+                            CART PRODUCTS
+                        ========================= */
+
                         cartItems.map((product) => {
 
-                            const quantity = product.quantity || 1;
+
+                            const quantity =
+                                product.quantity || 1;
+
+
+                            const productPrice =
+                                Number(
+                                    product.offerprice
+                                ) || 0;
+
 
                             const productTotal =
-                                Number(product.offerprice) * quantity;
+                                productPrice *
+                                quantity;
+
 
                             return (
 
@@ -52,56 +165,109 @@ export default function Cart() {
                                     key={product.id}
                                 >
 
-                                    {/* IMAGE */}
+
+                                    {/* =========================
+                                        IMAGE
+                                    ========================= */}
+
                                     <div className="cart-image">
 
                                         <img
-                                            src={product.image?.[0]}
-                                            alt={product.name}
+                                            src={
+                                                getProductImage(
+                                                    product
+                                                )
+                                            }
+                                            alt={
+                                                product.name
+                                            }
                                         />
 
                                     </div>
 
 
-                                    {/* DETAILS */}
+                                    {/* =========================
+                                        DETAILS
+                                    ========================= */}
+
                                     <div className="cart-details">
+
 
                                         <h2>
                                             {product.name}
                                         </h2>
 
 
+                                        {/* PRICE */}
+
+                                        <div className="cart-item-price">
+
+                                            <span>
+                                                ₹
+                                                {
+                                                    productPrice.toLocaleString(
+                                                        "en-IN"
+                                                    )
+                                                }
+                                            </span>
+
+                                        </div>
+
+
+                                        {/* =========================
+                                            QUANTITY
+                                        ========================= */}
+
                                         <div className="cart-info">
 
-                                            {/* QUANTITY */}
                                             <div>
 
                                                 <span>
                                                     Quantity
                                                 </span>
 
+
                                                 <div className="quantity">
+
+
+                                                    {/* MINUS */}
 
                                                     <button
                                                         onClick={() =>
-                                                            decreaseQuantity(product.id)
+                                                            decreaseQuantity(
+                                                                product.id
+                                                            )
                                                         }
-                                                        disabled={quantity <= 1}
+
+                                                        disabled={
+                                                            quantity <= 1
+                                                        }
                                                     >
                                                         −
                                                     </button>
 
+
+                                                    {/* NUMBER */}
+
                                                     <span>
-                                                        {quantity}
+                                                        {
+                                                            quantity
+                                                        }
                                                     </span>
+
+
+                                                    {/* PLUS */}
 
                                                     <button
                                                         onClick={() =>
-                                                            increaseQuantity(product.id)
+                                                            increaseQuantity(
+                                                                product.id
+                                                            )
                                                         }
                                                     >
                                                         +
                                                     </button>
+
 
                                                 </div>
 
@@ -110,25 +276,41 @@ export default function Cart() {
                                         </div>
 
 
-                                        {/* REMOVE */}
+                                        {/* =========================
+                                            REMOVE
+                                        ========================= */}
+
                                         <button
                                             className="remove-btn"
+
                                             onClick={() =>
-                                                removeFromCart(product.id)
+                                                removeFromCart(
+                                                    product.id
+                                                )
                                             }
                                         >
                                             × Remove
                                         </button>
 
+
                                     </div>
 
 
-                                    {/* PRODUCT TOTAL */}
+                                    {/* =========================
+                                        PRODUCT TOTAL
+                                    ========================= */}
+
                                     <div className="cart-price">
 
-                                        ₹{productTotal.toLocaleString("en-IN")}
+                                        ₹
+                                        {
+                                            productTotal.toLocaleString(
+                                                "en-IN"
+                                            )
+                                        }
 
                                     </div>
+
 
                                 </div>
 
@@ -141,15 +323,21 @@ export default function Cart() {
                 </div>
 
 
-                {/* RIGHT */}
+                {/* =========================
+                    RIGHT
+                ========================= */}
+
                 <div className="cart-right">
 
                     <div className="order-summary">
+
 
                         <h2>
                             Order Summary
                         </h2>
 
+
+                        {/* SUBTOTAL */}
 
                         <div className="summary-row">
 
@@ -157,14 +345,25 @@ export default function Cart() {
                                 Subtotal
                             </span>
 
+
                             <span>
-                                ₹{subtotal.toLocaleString("en-IN", {
-                                    minimumFractionDigits: 2
-                                })}
+
+                                ₹
+                                {
+                                    subtotal.toLocaleString(
+                                        "en-IN",
+                                        {
+                                            minimumFractionDigits: 2
+                                        }
+                                    )
+                                }
+
                             </span>
 
                         </div>
 
+
+                        {/* SHIPPING */}
 
                         <div className="summary-row">
 
@@ -172,17 +371,30 @@ export default function Cart() {
                                 Shipping
                             </span>
 
+
                             <span>
-                                ₹{shipping.toLocaleString("en-IN", {
-                                    minimumFractionDigits: 2
-                                })}
+
+                                ₹
+                                {
+                                    shipping.toLocaleString(
+                                        "en-IN",
+                                        {
+                                            minimumFractionDigits: 2
+                                        }
+                                    )
+                                }
+
                             </span>
 
                         </div>
 
 
+                        {/* LINE */}
+
                         <div className="summary-line"></div>
 
+
+                        {/* GRAND TOTAL */}
 
                         <div className="grand-total">
 
@@ -190,16 +402,29 @@ export default function Cart() {
                                 Grand Total
                             </strong>
 
+
                             <strong>
-                                ₹{grandTotal.toLocaleString("en-IN", {
-                                    minimumFractionDigits: 2
-                                })}
+
+                                ₹
+                                {
+                                    grandTotal.toLocaleString(
+                                        "en-IN",
+                                        {
+                                            minimumFractionDigits: 2
+                                        }
+                                    )
+                                }
+
                             </strong>
 
                         </div>
 
 
-                        <button className="checkout-btn">
+                        {/* CHECKOUT */}
+
+                        <button
+                            className="checkout-btn"
+                        >
                             Buy Now
                         </button>
 

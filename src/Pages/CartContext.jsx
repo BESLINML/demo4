@@ -13,15 +13,15 @@ export default function CartProvider({ children }) {
         setCartItems((previous) => {
 
             const alreadyExist = previous.find(
-                item => item.id === product.id
+                item => String(item.id) === String(product.id)
             );
 
-            // If product already exists,
-            // increase its quantity
+            // Product already exists
+            // Increase quantity
             if (alreadyExist) {
 
                 return previous.map(item =>
-                    item.id === product.id
+                    String(item.id) === String(product.id)
                         ? {
                             ...item,
                             quantity: (item.quantity || 1) + 1
@@ -50,7 +50,7 @@ export default function CartProvider({ children }) {
 
         setCartItems((items) =>
             items.map((item) =>
-                item.id === id
+                String(item.id) === String(id)
                     ? {
                         ...item,
                         quantity: (item.quantity || 1) + 1
@@ -67,7 +67,7 @@ export default function CartProvider({ children }) {
 
         setCartItems((items) =>
             items.map((item) =>
-                item.id === id
+                String(item.id) === String(id)
                     ? {
                         ...item,
                         quantity: Math.max(
@@ -86,31 +86,28 @@ export default function CartProvider({ children }) {
     const removeFromCart = (id) => {
 
         setCartItems((items) =>
-            items.filter(item => item.id !== id)
+            items.filter(
+                item => String(item.id) !== String(id)
+            )
         );
 
     };
 
 
     return (
-
         <CartContext.Provider
             value={{
                 cartItems,
                 setCartItems,
 
                 addToCart,
-
                 increaseQuantity,
                 decreaseQuantity,
                 removeFromCart
             }}
         >
-
             {children}
-
         </CartContext.Provider>
-
     );
 
 }
